@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Japan Sakura Dashboard 🌸</title>
+  <style>
+    /* ── Reset & Base ───────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pink-light:  #fce4ec;
+      --pink:        #f48fb1;
+      --pink-dark:   #e91e8c;
+      --petal:       #f8bbd0;
+      --cherry:      #c2185b;
+      --leaf:        #4caf50;
+      --sky:         #e3f2fd;
+      --text:        #3e2723;
+      --muted:       #8d6e63;
+      --white:       #fffafa;
+      --shadow:      rgba(194, 24, 91, 0.12);
+      --radius:      12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(160deg, #fff0f5 0%, #fce4ec 40%, #e8f5e9 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Petal animation ────────────────────────────────────────── */
+    @keyframes fall {
+      0%   { transform: translateY(-60px) rotate(0deg);   opacity: 1; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+
+    .petals {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .petal {
+      position: absolute;
+      top: -60px;
+      width: 14px;
+      height: 14px;
+      background: radial-gradient(circle at 40% 40%, #f8bbd0, #f48fb1);
+      border-radius: 150% 0 150% 0;
+      opacity: 0;
+      animation: fall linear infinite;
+    }
+
+    /* ── Header ─────────────────────────────────────────────────── */
+    header {
+      position: relative;
+      z-index: 1;
+      background: linear-gradient(135deg, var(--cherry) 0%, #e91e8c 60%, #f06292 100%);
+      color: var(--white);
+      padding: 2rem 1.5rem 1.8rem;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(194, 24, 91, 0.4);
+    }
+
+    header h1 {
+      font-size: clamp(1.6rem, 5vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+
+    header p {
+      margin-top: 0.4rem;
+      font-size: clamp(0.85rem, 2vw, 1rem);
+      opacity: 0.9;
+    }
+
+    .header-meta {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 1rem;
+      font-size: 0.82rem;
+      opacity: 0.85;
+      flex-wrap: wrap;
+    }
+
+    .header-meta span { display: flex; align-items: center; gap: 0.3rem; }
+
+    /* ── Main layout ─────────────────────────────────────────────── */
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 3rem;
+    }
+
+    section { margin-bottom: 2.5rem; }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--cherry);
+      margin-bottom: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 2px;
+      background: linear-gradient(90deg, var(--pink), transparent);
+      border-radius: 2px;
+    }
+
+    /* ── Summary cards ───────────────────────────────────────────── */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 1rem;
+    }
+
+    .summary-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 1.2rem 1rem;
+      text-align: center;
+      box-shadow: 0 2px 14px var(--shadow);
+      border-top: 4px solid var(--pink);
+      transition: transform 0.2s;
+    }
+
+    .summary-card:hover { transform: translateY(-3px); }
+
+    .summary-card .icon { font-size: 2rem; margin-bottom: 0.4rem; }
+    .summary-card .value { font-size: 1.7rem; font-weight: 800; color: var(--cherry); }
+    .summary-card .label { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }
+
+    /* ── City bloom cards ────────────────────────────────────────── */
+    .city-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.1rem;
+    }
+
+    .city-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 1.1rem 1rem 1rem;
+      box-shadow: 0 2px 14px var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .city-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 24px rgba(194, 24, 91, 0.2);
+    }
+
+    .city-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .city-name { font-size: 1rem; font-weight: 700; }
+    .city-region { font-size: 0.72rem; color: var(--muted); }
+
+    .status-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.22rem 0.6rem;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .status-full     { background: #fce4ec; color: #c2185b; }
+    .status-peak     { background: #f8bbd0; color: #880e4f; }
+    .status-blooming { background: #e8f5e9; color: #2e7d32; }
+    .status-early    { background: #fff9c4; color: #f57f17; }
+    .status-bud      { background: #e3f2fd; color: #1565c0; }
+    .status-ended    { background: #f5f5f5; color: #616161; }
+
+    .bloom-bar {
+      height: 7px;
+      background: #f0e4e8;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .bloom-bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      background: linear-gradient(90deg, var(--pink), var(--cherry));
+      transition: width 0.6s ease;
+    }
+
+    .city-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .city-meta strong { color: var(--text); }
+
+    /* ── Timeline ────────────────────────────────────────────────── */
+    .timeline-wrap {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 1.2rem 1rem;
+      box-shadow: 0 2px 14px var(--shadow);
+      overflow-x: auto;
+    }
+
+    table.timeline {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 560px;
+      font-size: 0.82rem;
+    }
+
+    table.timeline th {
+      background: var(--cherry);
+      color: #fff;
+      padding: 0.55rem 0.6rem;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    table.timeline th:first-child { text-align: left; border-radius: var(--radius) 0 0 0; }
+    table.timeline th:last-child  { border-radius: 0 var(--radius) 0 0; }
+
+    table.timeline td {
+      padding: 0.55rem 0.6rem;
+      border-bottom: 1px solid #f5e6ea;
+      text-align: center;
+    }
+
+    table.timeline td:first-child { text-align: left; font-weight: 600; }
+
+    table.timeline tr:last-child td { border-bottom: none; }
+    table.timeline tr:nth-child(even) td { background: #fff5f7; }
+
+    .bloom-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin: auto;
+    }
+
+    /* ── Spots section ───────────────────────────────────────────── */
+    .spots-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+
+    .spot-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 2px 14px var(--shadow);
+      transition: transform 0.2s;
+    }
+
+    .spot-card:hover { transform: translateY(-4px); }
+
+    .spot-banner {
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+    }
+
+    .spot-body { padding: 0.9rem 1rem 1rem; }
+    .spot-body h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .spot-body p  { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+
+    .spot-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.6rem;
+    }
+
+    .spot-tag {
+      font-size: 0.68rem;
+      background: var(--pink-light);
+      color: var(--cherry);
+      padding: 0.18rem 0.5rem;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    /* ── Tips section ────────────────────────────────────────────── */
+    .tips-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 1rem;
+    }
+
+    .tip-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 1rem;
+      box-shadow: 0 2px 14px var(--shadow);
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+
+    .tip-icon { font-size: 1.5rem; flex-shrink: 0; }
+
+    .tip-text h4 { font-size: 0.88rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .tip-text p  { font-size: 0.77rem; color: var(--muted); line-height: 1.5; }
+
+    /* ── Footer ──────────────────────────────────────────────────── */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 1.5rem 1rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      border-top: 1px solid var(--petal);
+    }
+
+    /* ── Responsive ──────────────────────────────────────────────── */
+    @media (max-width: 480px) {
+      .summary-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Falling petals -->
+<div class="petals" id="petals" aria-hidden="true"></div>
+
+<!-- Header -->
+<header>
+  <h1>🌸 Japan Sakura Dashboard</h1>
+  <p>Cherry Blossom Bloom Tracker · 桜前線 · Spring 2026</p>
+  <div class="header-meta">
+    <span>📅 <span id="current-date"></span></span>
+    <span>🌡️ Season: Spring</span>
+    <span>🗾 47 Prefectures tracked</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- Summary -->
+  <section>
+    <h2 class="section-title">🌸 Season at a Glance</h2>
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="icon">🌸</div>
+        <div class="value">14</div>
+        <div class="label">Cities at Full Bloom</div>
+      </div>
+      <div class="summary-card">
+        <div class="icon">🌺</div>
+        <div class="value">9</div>
+        <div class="label">Cities at Peak</div>
+      </div>
+      <div class="summary-card">
+        <div class="icon">🌱</div>
+        <div class="value">8</div>
+        <div class="label">Cities Blooming</div>
+      </div>
+      <div class="summary-card">
+        <div class="icon">🌿</div>
+        <div class="value">16</div>
+        <div class="label">Yet to Bloom</div>
+      </div>
+      <div class="summary-card">
+        <div class="icon">🌡️</div>
+        <div class="value">14°C</div>
+        <div class="label">Avg Temp (Tokyo)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- City bloom status -->
+  <section>
+    <h2 class="section-title">🗾 Bloom Status by City</h2>
+    <div class="city-grid" id="city-grid"></div>
+  </section>
+
+  <!-- Timeline -->
+  <section>
+    <h2 class="section-title">📅 Bloom Timeline (March – May 2026)</h2>
+    <div class="timeline-wrap">
+      <table class="timeline">
+        <thead>
+          <tr>
+            <th>City</th>
+            <th>First Bloom</th>
+            <th>Full Bloom</th>
+            <th>Peak End</th>
+            <th>Region</th>
+          </tr>
+        </thead>
+        <tbody id="timeline-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Top spots -->
+  <section>
+    <h2 class="section-title">📍 Top Hanami Spots</h2>
+    <div class="spots-grid" id="spots-grid"></div>
+  </section>
+
+  <!-- Tips -->
+  <section>
+    <h2 class="section-title">💡 Hanami Tips</h2>
+    <div class="tips-grid">
+      <div class="tip-card">
+        <div class="tip-icon">🕐</div>
+        <div class="tip-text">
+          <h4>Arrive Early</h4>
+          <p>Popular parks fill up fast. Arrive before 9 am to secure a good spot under the trees.</p>
+        </div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🍱</div>
+        <div class="tip-text">
+          <h4>Pack a Bento</h4>
+          <p>Bring a picnic bento with onigiri, karaage, and sakura mochi for the full experience.</p>
+        </div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🌦️</div>
+        <div class="tip-text">
+          <h4>Watch the Forecast</h4>
+          <p>Petals fall quickly in rain or wind. Check the 7-day forecast before planning your visit.</p>
+        </div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🚃</div>
+        <div class="tip-text">
+          <h4>Use Public Transit</h4>
+          <p>Parking near popular spots is nearly impossible. Take the train or a local bus.</p>
+        </div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">📷</div>
+        <div class="tip-text">
+          <h4>Golden Hour Magic</h4>
+          <p>The soft light around sunset makes sakura photos truly stunning — don't miss it.</p>
+        </div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🏮</div>
+        <div class="tip-text">
+          <h4>Night Sakura (夜桜)</h4>
+          <p>Many parks light up the trees at night. Yozakura viewing is magical and less crowded.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  🌸 Japan Sakura Dashboard · Data for informational purposes · Spring 2026
+</footer>
+
+<script>
+  /* ── Data ─────────────────────────────────────────────────────── */
+  const cities = [
+    { name: "Tokyo",      nameJa: "東京",  region: "Kantō",   bloomPct: 100, status: "full",     firstBloom: "Mar 21", fullBloom: "Apr 1",  peakEnd: "Apr 10" },
+    { name: "Kyoto",      nameJa: "京都",  region: "Kansai",  bloomPct: 95,  status: "peak",     firstBloom: "Mar 24", fullBloom: "Apr 3",  peakEnd: "Apr 11" },
+    { name: "Osaka",      nameJa: "大阪",  region: "Kansai",  bloomPct: 98,  status: "full",     firstBloom: "Mar 22", fullBloom: "Apr 2",  peakEnd: "Apr 10" },
+    { name: "Hiroshima",  nameJa: "広島",  region: "Chūgoku", bloomPct: 100, status: "full",     firstBloom: "Mar 20", fullBloom: "Mar 30", peakEnd: "Apr 8"  },
+    { name: "Fukuoka",    nameJa: "福岡",  region: "Kyūshū",  bloomPct: 100, status: "full",     firstBloom: "Mar 18", fullBloom: "Mar 28", peakEnd: "Apr 5"  },
+    { name: "Nagoya",     nameJa: "名古屋", region: "Chūbu",  bloomPct: 92,  status: "peak",     firstBloom: "Mar 23", fullBloom: "Apr 2",  peakEnd: "Apr 11" },
+    { name: "Sapporo",    nameJa: "札幌",  region: "Hokkaidō",bloomPct: 10,  status: "bud",      firstBloom: "Apr 24", fullBloom: "May 1",  peakEnd: "May 8"  },
+    { name: "Sendai",     nameJa: "仙台",  region: "Tōhoku",  bloomPct: 40,  status: "early",    firstBloom: "Apr 9",  fullBloom: "Apr 16", peakEnd: "Apr 22" },
+    { name: "Kanazawa",   nameJa: "金沢",  region: "Hokuriku",bloomPct: 85,  status: "blooming", firstBloom: "Mar 27", fullBloom: "Apr 5",  peakEnd: "Apr 13" },
+    { name: "Naha",       nameJa: "那覇",  region: "Okinawa", bloomPct: 0,   status: "ended",    firstBloom: "Jan 15", fullBloom: "Jan 28", peakEnd: "Feb 5"  },
+    { name: "Matsumoto",  nameJa: "松本",  region: "Chūbu",   bloomPct: 55,  status: "blooming", firstBloom: "Apr 5",  fullBloom: "Apr 12", peakEnd: "Apr 20" },
+    { name: "Nara",       nameJa: "奈良",  region: "Kansai",  bloomPct: 97,  status: "full",     firstBloom: "Mar 25", fullBloom: "Apr 2",  peakEnd: "Apr 11" },
+    { name: "Kobe",       nameJa: "神戸",  region: "Kansai",  bloomPct: 96,  status: "full",     firstBloom: "Mar 23", fullBloom: "Apr 1",  peakEnd: "Apr 10" },
+    { name: "Yokohama",   nameJa: "横浜",  region: "Kantō",   bloomPct: 100, status: "full",     firstBloom: "Mar 20", fullBloom: "Mar 31", peakEnd: "Apr 9"  },
+    { name: "Aomori",     nameJa: "青森",  region: "Tōhoku",  bloomPct: 5,   status: "bud",      firstBloom: "Apr 20", fullBloom: "Apr 28", peakEnd: "May 4"  },
+    { name: "Hakodate",   nameJa: "函館",  region: "Hokkaidō",bloomPct: 20,  status: "early",    firstBloom: "Apr 18", fullBloom: "Apr 26", peakEnd: "May 2"  },
+  ];
+
+  const spots = [
+    { name: "Ueno Park",         city: "Tokyo",    emoji: "🌸", gradient: "#f8bbd0,#f06292", desc: "One of Japan's most famous hanami venues with over 1,000 sakura trees lining the paths.",          tags: ["Free Entry","Late Night","Food Stalls"] },
+    { name: "Maruyama Park",     city: "Kyoto",    emoji: "🏯", gradient: "#fce4ec,#e91e8c", desc: "Home to the iconic weeping cherry tree, illuminated at night for a magical experience.",           tags: ["Night Lit","Weeping Cherry","Historic"] },
+    { name: "Shinjuku Gyoen",    city: "Tokyo",    emoji: "🌿", gradient: "#e8f5e9,#81c784", desc: "A large national garden with multiple cherry varieties extending the bloom season beautifully.",    tags: ["Paid Entry","Picnic","Multiple Species"] },
+    { name: "Philosopher's Path",city: "Kyoto",    emoji: "🛤️", gradient: "#fff9c4,#ffee58", desc: "A stone walkway lined with hundreds of cherry trees following a canal through eastern Kyoto.",     tags: ["Walking Trail","Canals","Temples Nearby"] },
+    { name: "Hirosaki Castle",   city: "Hirosaki", emoji: "🏰", gradient: "#e3f2fd,#64b5f6", desc: "Over 2,600 trees surround a historic castle — one of Japan's top three cherry blossom sites.",    tags: ["Castle","Historic","Boat Ride"] },
+    { name: "Kenroku-en Garden", city: "Kanazawa", emoji: "🍃", gradient: "#e8f5e9,#a5d6a7", desc: "One of Japan's three great gardens, featuring elegant cherry trees over traditional ponds.",        tags: ["Garden","Cultural Site","Teahouse"] },
+  ];
+
+  /* ── Status helpers ───────────────────────────────────────────── */
+  const statusLabel = { full: "Full Bloom 🌸", peak: "Peak 🌺", blooming: "Blooming 🌱", early: "Early Bloom 🌾", bud: "Bud 🌿", ended: "Season Ended" };
+  const statusClass = { full: "status-full", peak: "status-peak", blooming: "status-blooming", early: "status-early", bud: "status-bud", ended: "status-ended" };
+  const dotColor    = { full: "#e91e8c", peak: "#f06292", blooming: "#66bb6a", early: "#ffa726", bud: "#42a5f5", ended: "#bdbdbd" };
+
+  /* ── Render city cards ────────────────────────────────────────── */
+  const cityGrid = document.getElementById("city-grid");
+  cities.forEach(c => {
+    cityGrid.insertAdjacentHTML("beforeend", `
+      <div class="city-card">
+        <div class="city-header">
+          <div>
+            <div class="city-name">${c.name} <span style="font-weight:400;font-size:.8em;color:var(--muted)">${c.nameJa}</span></div>
+            <div class="city-region">${c.region}</div>
+          </div>
+          <span class="status-badge ${statusClass[c.status]}">${statusLabel[c.status]}</span>
+        </div>
+        <div class="bloom-bar">
+          <div class="bloom-bar-fill" style="width:${c.bloomPct}%"></div>
+        </div>
+        <div class="city-meta">
+          <span>🌸 Bloom: <strong>${c.bloomPct}%</strong></span>
+          <span>📅 Full: <strong>${c.fullBloom}</strong></span>
+        </div>
+      </div>
+    `);
+  });
+
+  /* ── Render timeline ──────────────────────────────────────────── */
+  const tbody = document.getElementById("timeline-body");
+  cities.forEach(c => {
+    tbody.insertAdjacentHTML("beforeend", `
+      <tr>
+        <td>${c.name} ${c.nameJa}</td>
+        <td>${c.firstBloom}</td>
+        <td>${c.fullBloom}</td>
+        <td>${c.peakEnd}</td>
+        <td>
+          <span class="bloom-dot" style="background:${dotColor[c.status]};box-shadow:0 0 4px ${dotColor[c.status]}"></span>
+          ${c.region}
+        </td>
+      </tr>
+    `);
+  });
+
+  /* ── Render spots ─────────────────────────────────────────────── */
+  const spotsGrid = document.getElementById("spots-grid");
+  spots.forEach(s => {
+    spotsGrid.insertAdjacentHTML("beforeend", `
+      <div class="spot-card">
+        <div class="spot-banner" style="background:linear-gradient(135deg,${s.gradient})">${s.emoji}</div>
+        <div class="spot-body">
+          <h3>${s.name}</h3>
+          <p>${s.desc}</p>
+          <div class="spot-tags">${s.tags.map(t => `<span class="spot-tag">${t}</span>`).join("")}</div>
+        </div>
+      </div>
+    `);
+  });
+
+  /* ── Live date ────────────────────────────────────────────────── */
+  const d = new Date();
+  document.getElementById("current-date").textContent =
+    d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+
+  /* ── Falling petals ───────────────────────────────────────────── */
+  const container = document.getElementById("petals");
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement("div");
+    p.className = "petal";
+    p.style.left            = Math.random() * 100 + "vw";
+    p.style.animationDuration  = (6 + Math.random() * 10) + "s";
+    p.style.animationDelay     = (Math.random() * 12) + "s";
+    p.style.width           = (10 + Math.random() * 8) + "px";
+    p.style.height          = p.style.width;
+    p.style.opacity         = String(0.6 + Math.random() * 0.4);
+    container.appendChild(p);
+  }
+</script>
+</body>
+</html>
