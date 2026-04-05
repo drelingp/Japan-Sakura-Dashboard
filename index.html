@@ -1,0 +1,3661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Japan Sakura Forecast 2026 🌸</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" >
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" >
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,600;0,700;1,400&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #FFF7F9;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #FFF0F4;
+  --bg-glass: rgba(255, 255, 255, 0.88);
+  --text-primary: #2D1B30;
+  --text-secondary: #6B4C6E;
+  --text-tertiary: #9E7DA1;
+  --accent: #D6336C;
+  --accent-soft: #F06595;
+  --accent-light: #FFCCD5;
+  --accent-bg: #FFF0F3;
+  --bloom-pending: #90A4AE;
+  --bloom-not-yet: #66BB6A;
+  --bloom-budding: #FFA726;
+  --bloom-blooming: #F48FB1;
+  --bloom-full: #E91E63;
+  --bloom-falling: #CE93D8;
+  --bloom-ended: #BDBDBD;
+  --border: #F5D5DE;
+  --shadow: 0 2px 16px rgba(45, 27, 48, 0.07);
+  --shadow-lg: 0 8px 32px rgba(45, 27, 48, 0.12);
+  --radius: 14px;
+  --radius-sm: 8px;
+  --sidebar-width: 380px;
+  --header-height: 56px;
+  --slider-height: 58px;
+}
+.dark {
+  --bg-primary: #18101D;
+  --bg-secondary: #221729;
+  --bg-tertiary: #2C1D34;
+  --bg-glass: rgba(34, 23, 41, 0.92);
+  --text-primary: #F5E6F0;
+  --text-secondary: #C9A8CE;
+  --text-tertiary: #8E6F92;
+  --accent: #F48FB1;
+  --accent-soft: #F06595;
+  --accent-light: #5C2240;
+  --accent-bg: #2E1525;
+  --border: #3D2842;
+  --shadow: 0 2px 16px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: 'Zen Maru Gothic', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+#app { display: flex; flex-direction: column; height: 100vh; position: relative; overflow: hidden; }
+
+/* ── Header ── */
+header {
+  height: var(--header-height);
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  z-index: 1000;
+  flex-shrink: 0;
+  gap: 14px;
+}
+.logo { display: flex; align-items: baseline; gap: 8px; white-space: nowrap; }
+.logo-icon { font-size: 22px; }
+.logo h1 {
+  font-family: 'Cormorant', serif;
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: -0.3px;
+  color: var(--text-primary);
+}
+.logo h1 span { color: var(--accent); font-weight: 400; }
+.header-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-primary);
+}
+.lang-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: 'Zen Maru Gothic', sans-serif;
+  font-size: 11px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.lang-btn:hover { color: var(--accent); }
+.lang-btn.active {
+  background: var(--accent);
+  color: #fff;
+}
+.legend-btn {
+  background: var(--accent-bg);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-family: 'Zen Maru Gothic', sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.legend-btn:hover { background: var(--accent); color: #fff; }
+
+/* ── Date Slider Strip ── */
+.date-slider-strip {
+  height: var(--slider-height);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 16px;
+  flex-shrink: 0;
+  z-index: 999;
+}
+.date-display {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 170px;
+  flex-shrink: 0;
+}
+.date-display .date-main {
+  font-family: 'Cormorant', serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--accent);
+}
+.date-display .date-year {
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+.slider-wrap { flex: 1; min-width: 0; }
+.date-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 7px;
+  border-radius: 4px;
+  background: linear-gradient(to right, #81C784, #A5D6A7, #FFE082, #F48FB1, #EC407A, #CE93D8, #BDBDBD);
+  outline: none;
+  cursor: pointer;
+  margin-bottom: 2px;
+}
+.date-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 3px solid #fff;
+  box-shadow: 0 2px 10px rgba(214, 51, 108, 0.35);
+  cursor: grab;
+  transition: transform 0.15s;
+}
+.date-range::-webkit-slider-thumb:active { transform: scale(1.15); cursor: grabbing; }
+.date-range::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 3px solid #fff;
+  box-shadow: 0 2px 10px rgba(214, 51, 108, 0.35);
+  cursor: grab;
+}
+.slider-ticks {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 2px;
+}
+.slider-ticks span {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  letter-spacing: 0.3px;
+}
+.source-copy {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+  text-align: right;
+}
+.source-copy strong { color: var(--accent); }
+
+.loading-status {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 20px 10px;
+  display: none;
+  gap: 6px;
+}
+.loading-status.visible { display: grid; }
+.loading-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 11.5px;
+  color: var(--text-secondary);
+}
+.loading-status-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.loading-status-value {
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+.loading-bar {
+  position: relative;
+  height: 5px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--border);
+}
+.loading-bar-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #F48FB1, #D6336C, #FFA726);
+  transition: width 0.22s ease;
+}
+.loading-bar.indeterminate .loading-bar-fill {
+  width: 38%;
+  animation: loadingBarIndeterminate 1.1s ease-in-out infinite;
+}
+@keyframes loadingBarIndeterminate {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(320%); }
+}
+
+/* ── Main layout ── */
+main { display: flex; flex: 1; overflow: hidden; }
+
+/* ── Sidebar ── */
+#sidebar {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+  z-index: 500;
+}
+.sidebar-header { padding: 14px 16px 10px; flex-shrink: 0; }
+.search-box { position: relative; margin-bottom: 10px; }
+.search-box i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-tertiary);
+  font-size: 13px;
+}
+.search-box input {
+  width: 100%;
+  padding: 10px 12px 10px 36px;
+  font-family: 'Zen Maru Gothic', sans-serif;
+  font-size: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.search-box input:focus { border-color: var(--accent); }
+.search-box input::placeholder { color: var(--text-tertiary); }
+.region-filters { display: flex; flex-wrap: wrap; gap: 5px; }
+.region-pill {
+  padding: 5px 11px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  font-size: 11.5px;
+  font-family: 'Zen Maru Gothic', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.region-pill:hover { border-color: var(--accent-soft); color: var(--accent); }
+.region-pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.stat-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.stat-bar strong { color: var(--accent); font-weight: 700; }
+
+/* ── City List ── */
+.city-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 12px;
+  scroll-behavior: smooth;
+}
+.city-list::-webkit-scrollbar { width: 5px; }
+.city-list::-webkit-scrollbar-track { background: transparent; }
+.city-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.city-card {
+  padding: 11px 13px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+  margin-bottom: 4px;
+}
+.city-card:hover { background: var(--bg-tertiary); }
+.city-card.selected {
+  background: var(--accent-bg);
+  border-color: var(--accent-light);
+}
+.city-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 3px;
+}
+.city-name-wrap {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+.card-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1.5px solid rgba(255,255,255,0.5);
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.08);
+}
+.dark .card-dot { border-color: rgba(0,0,0,0.3); }
+.city-name { font-weight: 700; font-size: 14px; }
+.city-name-ja { font-size: 11px; color: var(--text-tertiary); }
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 12px;
+  font-size: 10.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.city-card-mid {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  margin-bottom: 3px;
+}
+.city-card-mid .temp { color: var(--text-tertiary); }
+.city-countdown {
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 500;
+}
+.city-spot {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.city-spots-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+.spot-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 10.5px;
+  line-height: 1;
+}
+
+.list-view-switch {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.spot-filters {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+.spot-filters.hidden {
+  display: none;
+}
+.spot-filter-group {
+  display: grid;
+  gap: 6px;
+}
+.spot-filter-label {
+  font-size: 10.5px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.spot-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.spot-filter-pill {
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 10.5px;
+  font-family: 'Zen Maru Gothic', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.spot-filter-pill.active {
+  background: var(--accent-bg);
+  color: var(--accent);
+  border-color: var(--accent-light);
+}
+.view-btn {
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 11.5px;
+  font-family: 'Zen Maru Gothic', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.view-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.spot-card-parent {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-bottom: 3px;
+}
+.spot-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+.spot-card-meta .spot-chip {
+  margin-top: 0;
+}
+
+/* ── Status Colors ── */
+.status-pending { background: #ECEFF1; color: #546E7A; }
+.status-not_yet { background: #E8F5E9; color: #2E7D32; }
+.status-budding { background: #FFF3E0; color: #E65100; }
+.status-blooming { background: #FCE4EC; color: #C2185B; }
+.status-full_bloom { background: #F8BBD0; color: #AD1457; }
+.status-falling { background: #F3E5F5; color: #7B1FA2; }
+.status-ended { background: #F5F5F5; color: #757575; }
+.dark .status-pending { background: #263238; color: #B0BEC5; }
+.dark .status-not_yet { background: #1B3A1E; color: #81C784; }
+.dark .status-budding { background: #3E2400; color: #FFB74D; }
+.dark .status-blooming { background: #3D1228; color: #F48FB1; }
+.dark .status-full_bloom { background: #4A0E2E; color: #F06292; }
+.dark .status-falling { background: #2A1040; color: #CE93D8; }
+.dark .status-ended { background: #2A2A2A; color: #BDBDBD; }
+
+/* ── Map ── */
+#map-container { flex: 1; position: relative; }
+#map { width: 100%; height: 100%; z-index: 1; }
+.dark .leaflet-tile { filter: none; }
+.dark .leaflet-control-zoom a { background: var(--bg-secondary); color: var(--text-primary); border-color: var(--border); }
+.leaflet-tile.tile-failed { opacity: 0 !important; }
+
+/* ── Pin Markers ── */
+.map-pin-wrap { position: relative; }
+.map-pin {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2.5px solid #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  position: relative;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.map-pin::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 10px solid;
+}
+.map-pin:hover { transform: scale(1.25); }
+.map-pin.spot-pin {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+}
+.map-pin.spot-pin::after {
+  bottom: -6px;
+  border-left-width: 4px;
+  border-right-width: 4px;
+  border-top-width: 7px;
+}
+.map-pin.pulse { animation: pinPulse 2s ease-out infinite; }
+@keyframes pinPulse {
+  0%, 100% { box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 0 0 rgba(233, 30, 99, 0.35); }
+  50% { box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 0 10px rgba(233, 30, 99, 0); }
+}
+.map-pin-inner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.45);
+}
+.dark .map-pin { border-color: var(--bg-secondary); }
+.pin-label {
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-glass);
+  color: var(--text-primary);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 10.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  box-shadow: var(--shadow);
+}
+.map-pin-wrap:hover .pin-label, .map-pin-wrap.active .pin-label { opacity: 1; }
+
+/* ── Leaflet Popup (Rich) ── */
+.leaflet-popup-content-wrapper {
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow-lg) !important;
+  background: var(--bg-secondary) !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+.leaflet-popup-content { margin: 0 !important; width: auto !important; }
+.leaflet-popup-tip { background: var(--bg-secondary) !important; }
+.popup-inner {
+  min-width: 250px;
+  max-width: 310px;
+  display: flex;
+  flex-direction: column;
+  max-height: min(520px, calc(100vh - 110px));
+}
+.popup-top-band {
+  padding: 14px 18px 10px;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.popup-header { display: flex; align-items: baseline; gap: 6px; margin-bottom: 1px; }
+.popup-city {
+  font-family: 'Cormorant', serif;
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--text-primary);
+}
+.popup-ja { font-size: 13px; color: var(--text-tertiary); }
+.popup-region-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+.popup-region { font-size: 12px; color: var(--text-tertiary); }
+.popup-status .status-badge { font-size: 12px; padding: 4px 11px; }
+.popup-body {
+  padding: 14px 18px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+.popup-progress-section { margin-bottom: 12px; }
+.popup-progress-label {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-bottom: 5px;
+  display: flex;
+  justify-content: space-between;
+}
+.popup-progress-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border);
+  overflow: hidden;
+}
+.popup-progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #66BB6A, #FFA726, #F48FB1, #E91E63);
+  transition: width 0.5s ease;
+}
+.popup-info {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 5px 14px;
+  font-size: 12.5px;
+  margin-bottom: 10px;
+}
+.popup-info dt { color: var(--text-tertiary); white-space: nowrap; }
+.popup-info dd { color: var(--text-primary); font-weight: 500; }
+.popup-tip {
+  background: var(--accent-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+.popup-tip strong { color: var(--accent); }
+.popup-countdown {
+  text-align: center;
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 500;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.popup-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.popup-links a {
+  text-decoration: none;
+  color: var(--accent);
+  background: var(--accent-bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 11px;
+  line-height: 1;
+}
+.popup-links a:hover {
+  background: var(--accent);
+  color: #fff;
+}
+.popup-spots {
+  margin-bottom: 10px;
+}
+.popup-subtitle {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-bottom: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.popup-spot-list {
+  display: grid;
+  gap: 8px;
+}
+.popup-spot-item {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+.popup-spot-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.popup-spot-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.popup-spot-sub {
+  font-size: 10.5px;
+  color: var(--text-tertiary);
+}
+.popup-spot-forecast {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+/* ── Sakura Tooltip ── */
+.sakura-tooltip {
+  background: var(--bg-glass) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border) !important;
+  color: var(--text-primary) !important;
+  font-family: 'Zen Maru Gothic', sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  padding: 5px 10px !important;
+  border-radius: 8px !important;
+  box-shadow: var(--shadow) !important;
+}
+.sakura-tooltip::before { border-top-color: var(--border) !important; }
+
+/* ── Legend Panel ── */
+.legend-panel {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  box-shadow: var(--shadow-lg);
+  z-index: 800;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  display: none;
+}
+.legend-panel.visible { display: block; }
+.legend-panel h3 {
+  font-family: 'Cormorant', serif;
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+.legend-item { display: flex; align-items: center; gap: 8px; padding: 3px 0; }
+.legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── Map Info ── */
+.map-info {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  z-index: 600;
+  border: 1px solid var(--border);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ── Falling Petals ── */
+.petal {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: petalFall linear forwards;
+}
+.petal-shape {
+  width: 100%;
+  height: 100%;
+  background: var(--accent-light);
+  border-radius: 50% 0 50% 0;
+  opacity: 0.55;
+}
+.dark .petal-shape { opacity: 0.25; }
+@keyframes petalFall {
+  0% { transform: translateY(-20px) translateX(0) rotate(0deg); opacity: 0; }
+  5% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { transform: translateY(105vh) translateX(var(--drift)) rotate(var(--spin)); opacity: 0; }
+}
+
+/* ── Mobile Toggle ── */
+.mobile-toggle {
+  display: none;
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 24px;
+  font-family: 'Zen Maru Gothic', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  z-index: 1100;
+  box-shadow: 0 4px 20px rgba(214, 51, 108, 0.35);
+  transition: transform 0.2s;
+}
+.mobile-toggle:active { transform: translateX(-50%) scale(0.95); }
+
+/* ── No results ── */
+.no-results {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-tertiary);
+  font-size: 14px;
+}
+.no-results i { font-size: 32px; display: block; margin-bottom: 12px; opacity: 0.4; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  :root { --sidebar-width: 100%; --header-height: 50px; --slider-height: 52px; }
+  .logo h1 { font-size: 18px; }
+  header {
+    height: auto;
+    min-height: var(--header-height);
+    padding: 8px 12px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .header-right {
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .lang-switch { gap: 2px; }
+  .lang-btn { padding: 4px 7px; font-size: 10px; }
+  .date-slider-strip {
+    height: auto;
+    padding: 8px 12px 10px;
+    gap: 8px 10px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+  .date-display {
+    min-width: auto;
+    flex: 1 1 auto;
+  }
+  .date-display .date-main { font-size: 16px; }
+  .slider-wrap {
+    order: 3;
+    flex: 1 0 100%;
+  }
+  .source-copy {
+    order: 2;
+    width: auto;
+    flex: 0 1 46%;
+    text-align: right;
+    font-size: 11px;
+  }
+  .slider-ticks span { font-size: 9px; }
+  .list-view-switch { overflow-x: auto; padding-bottom: 2px; }
+  .spot-filter-row {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 2px;
+  }
+  main { flex-direction: column; }
+  #sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: min(62vh, 560px);
+    max-height: calc(100vh - 120px);
+    padding-bottom: env(safe-area-inset-bottom);
+    border-right: none;
+    border-top: 1px solid var(--border);
+    border-radius: var(--radius) var(--radius) 0 0;
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 1050;
+    box-shadow: 0 -4px 30px rgba(0,0,0,0.1);
+  }
+  #sidebar.open { transform: translateY(0); }
+  .mobile-toggle { display: block; }
+  #map-container { height: 100%; }
+  .map-info {
+    display: none;
+    bottom: 70px;
+    left: 12px;
+    right: 12px;
+    transform: none;
+    max-width: none;
+    white-space: normal;
+    text-align: center;
+    font-size: 10px;
+    line-height: 1.35;
+    padding: 6px 10px;
+  }
+  .map-info.is-loading { display: block; }
+  .legend-panel { top: 8px; right: 8px; font-size: 11px; padding: 10px 12px; }
+  .popup-inner {
+    min-width: 0;
+    width: min(300px, calc(100vw - 32px));
+    max-width: calc(100vw - 32px);
+    max-height: min(68vh, calc(100vh - 150px));
+  }
+  .leaflet-popup-content-wrapper {
+    max-width: calc(100vw - 24px) !important;
+  }
+  .popup-body {
+    padding-bottom: calc(18px + env(safe-area-inset-bottom));
+  }
+}
+@media (max-width: 400px) {
+  header {
+    align-items: flex-start;
+  }
+  .header-right {
+    width: 100%;
+    margin-left: 0;
+    justify-content: space-between;
+  }
+  .logo h1 span { display: none; }
+  .date-display .date-year { display: none; }
+  .source-copy {
+    width: 100%;
+    flex-basis: 100%;
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .city-card,
+  .map-pin,
+  .popup-progress-fill,
+  .loading-bar-fill,
+  .petal {
+    animation: none !important;
+    transition: none !important;
+  }
+  #petalsContainer {
+    display: none;
+  }
+}
+
+/* ── Entrance animations ── */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.city-card { animation: fadeSlideUp 0.3s ease both; }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="logo">
+      <span class="logo-icon">🌸</span>
+      <h1 id="appTitle">Sakura Forecast <span>2026</span></h1>
+    </div>
+    <div class="header-right">
+      <div class="lang-switch" id="langSwitch">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="zh-Hant">繁中</button>
+        <button class="lang-btn" data-lang="ja">日本語</button>
+      </div>
+      <button class="legend-btn" id="legendToggle"><i class="fa-solid fa-circle-info"></i> Legend</button>
+    </div>
+  </header>
+
+  <div class="date-slider-strip">
+    <div class="date-display">
+      <span class="date-main" id="dateLabel">March 22</span>
+      <span class="date-year">2026</span>
+    </div>
+    <div class="slider-wrap">
+      <input type="range" id="dateSlider" min="0" max="91" value="21" class="date-range">
+      <div class="slider-ticks">
+        <span>Mar 1</span>
+        <span>Apr 1</span>
+        <span>May 1</span>
+        <span>May 31</span>
+      </div>
+    </div>
+    <div class="source-copy" id="sourceLabel">Loading live forecast from WeatherMap…</div>
+  </div>
+
+  <div class="loading-status" id="loadingStatus" aria-live="polite">
+    <div class="loading-status-row">
+      <span class="loading-status-label" id="loadingStatusLabel">Loading forecasts…</span>
+      <span class="loading-status-value" id="loadingStatusValue"></span>
+    </div>
+    <div class="loading-bar" id="loadingBarTrack">
+      <div class="loading-bar-fill" id="loadingBarFill"></div>
+    </div>
+  </div>
+
+  <main>
+    <div id="sidebar">
+      <div class="sidebar-header">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="searchInput" placeholder="Search city or region…">
+        </div>
+        <div class="list-view-switch" id="listViewSwitch">
+          <button class="view-btn active" data-view="cities">Cities</button>
+          <button class="view-btn" data-view="spots">Spots</button>
+        </div>
+        <div class="region-filters" id="regionFilters"></div>
+        <div class="spot-filters hidden" id="spotFilters"></div>
+      </div>
+      <div class="stat-bar" id="statBar"></div>
+      <div class="city-list" id="cityList"></div>
+    </div>
+
+    <div id="map-container">
+      <div id="map"></div>
+      <div class="legend-panel" id="legendPanel">
+        <h3 id="legendTitle">Bloom Status</h3>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--bloom-pending)"></div><span data-legend="pending">Awaiting Forecast</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--bloom-not-yet)"></div><span data-legend="not_yet">Not Yet</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--bloom-budding)"></div><span data-legend="budding">Budding</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--bloom-blooming)"></div><span data-legend="blooming">Blooming</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--bloom-full)"></div><span data-legend="full_bloom">Full Bloom</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--bloom-falling)"></div><span data-legend="falling">Falling</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--bloom-ended)"></div><span data-legend="ended">Ended</span></div>
+      </div>
+      <div class="map-info" id="mapInfo">🌸 Loading Japan-wide Sakura forecast data…</div>
+    </div>
+  </main>
+
+  <button class="mobile-toggle" id="mobileToggle">
+    <i class="fa-solid fa-list"></i> City List
+  </button>
+</div>
+
+<div id="petalsContainer"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function() {
+  "use strict";
+  var SOURCE_URL = "https://r.jina.ai/http://sakura.weathermap.jp/en.php";
+  var NKISHOU_CITY_URL = "https://r.jina.ai/http://s.n-kishou.co.jp/w/sp/sakura/sakura_hw?&yosou=1";
+  var OFFICIAL_SAKURA_JA_URL = "https://s.n-kishou.co.jp/w/sp/sakura/sakura_top#spot_info";
+  var OFFICIAL_SAKURA_ZH_URL = "https://sakuranavi.n-kishou.co.jp/zh/?f=tennavi";
+  var OFFICIAL_SAKURA_EN_URL = "https://sakuranavi.n-kishou.co.jp/en/?f=tennavi";
+  var SEASON_YEAR = 2026;
+  var DAY_MS = 24 * 60 * 60 * 1000;
+  var HOME_VIEW = [36.35, 138.4];
+  var HOME_ZOOM = 5;
+  var SLIDER_START = makeFixedDate(SEASON_YEAR, 3, 1);
+  var SLIDER_END = makeFixedDate(SEASON_YEAR, 5, 31);
+  var REGION_ORDER = ["Hokkaido", "Tohoku", "Kanto/Koshin", "Tokai/Hokuriku", "Kinki", "Chugoku/Shikoku", "Kyushu", "Amami/Okinawa"];
+  var REGION_META = {
+    "Hokkaido": { ja: "北海道", zh: "北海道", tip: "Late-season bloom window; mornings stay cold even near peak." },
+    "Tohoku": { ja: "東北", zh: "東北", tip: "Inland temperatures swing quickly, so peak viewing can move by a few days." },
+    "Kanto/Koshin": { ja: "関東・甲信", zh: "關東・甲信", tip: "Urban parks open early, while mountain basins often lag behind." },
+    "Tokai/Hokuriku": { ja: "東海・北陸", zh: "東海・北陸", tip: "Warm spells can move bloom forward quickly across this region." },
+    "Kinki": { ja: "近畿", zh: "近畿", tip: "Historic temple and castle areas get busiest right around full bloom." },
+    "Chugoku/Shikoku": { ja: "中国・四国", zh: "中國・四國", tip: "Coastal cities often move from first bloom to peak within about a week." },
+    "Kyushu": { ja: "九州", zh: "九州", tip: "Early bloom region; rain and wind can shorten the best viewing window." },
+    "Amami/Okinawa": { ja: "奄美・沖縄", zh: "奄美・沖繩", tip: "Subtropical bloom timing runs much earlier than mainland Japan." }
+  };
+  var CITY_ROWS = [
+    "Sapporo|札幌|Hokkaido|43.0618|141.3545|Maruyama Park|Avg 11°C|4/21|4/26",
+    "Wakkanai|稚内|Hokkaido|45.4156|141.6731|Wakkanai Park|Avg 8°C|5/6|5/10",
+    "Asahikawa|旭川|Hokkaido|43.7706|142.3650|Asahiyama Park|Avg 10°C|4/25|4/29",
+    "Abashiri|網走|Hokkaido|44.0206|144.2736|Tentozan Lakeside|Avg 8°C|5/1|5/5",
+    "Kushiro|釧路|Hokkaido|42.9849|144.3814|Harutori Park|Avg 8°C|5/4|5/8",
+    "Obihiro|帯広|Hokkaido|42.9238|143.1967|Midorigaoka Park|Avg 11°C|4/25|4/29",
+    "Muroran|室蘭|Hokkaido|42.3152|140.9738|Sokuryozan Park|Avg 10°C|4/24|4/29",
+    "Hakodate|函館|Hokkaido|41.7687|140.7288|Goryokaku Park|Avg 11°C|4/20|4/24",
+    "Aomori|青森|Tohoku|40.8221|140.7474|Hirosaki Castle Park|Avg 12°C|4/12|4/16",
+    "Akita|秋田|Tohoku|39.7200|140.1026|Senshu Park|Avg 14°C|4/7|4/11",
+    "Morioka|盛岡|Tohoku|39.7019|141.1543|Morioka Castle Ruins Park|Avg 13°C|4/8|4/12",
+    "Sendai|仙台|Tohoku|38.2682|140.8694|Tsutsujigaoka Park|Avg 16°C|3/30|4/3",
+    "Yamagata|山形|Tohoku|38.2554|140.3396|Kajo Park|Avg 15°C|4/3|4/7",
+    "Fukushima|福島|Tohoku|37.7608|140.4747|Hanamiyama Park|Avg 16°C|3/31|4/3",
+    "Mito|水戸|Kanto/Koshin|36.3659|140.4713|Senba Lake Park|Avg 15°C|3/23|3/30",
+    "Utsunomiya|宇都宮|Kanto/Koshin|36.5551|139.8828|Hachimanyama Park|Avg 15°C|3/23|3/29",
+    "Maebashi|前橋|Kanto/Koshin|36.3895|139.0634|Maebashi Park|Avg 16°C|3/22|3/28",
+    "Kumagaya|熊谷|Kanto/Koshin|36.1473|139.3886|Arakawa Riverbank|Avg 18°C|3/19|3/28",
+    "Tokyo|東京|Kanto/Koshin|35.6762|139.6503|Ueno Park|Avg 17°C|3/19|3/25",
+    "Choshi|銚子|Kanto/Koshin|35.7345|140.8266|Tokawa Riverside|Avg 14°C|3/26|4/1",
+    "Yokohama|横浜|Kanto/Koshin|35.4437|139.6380|Sankeien Garden|Avg 17°C|3/22|3/30",
+    "Nagano|長野|Kanto/Koshin|36.6486|138.1948|Joyama Park|Avg 13°C|4/2|4/6",
+    "Kofu|甲府|Kanto/Koshin|35.6639|138.5683|Maizuru Castle Park|Avg 18°C|3/16|3/24",
+    "Shizuoka|静岡|Tokai/Hokuriku|34.9756|138.3828|Sumpu Castle Park|Avg 18°C|3/20|3/31",
+    "Nagoya|名古屋|Tokai/Hokuriku|35.1815|136.9066|Tsuruma Park|Avg 17°C|3/17|3/26",
+    "Gifu|岐阜|Tokai/Hokuriku|35.4233|136.7607|Gifu Park|Avg 17°C|3/16|3/25",
+    "Tsu|津|Tokai/Hokuriku|34.7303|136.5086|Tsu Castle Ruins|Avg 17°C|3/24|3/29",
+    "Niigata|新潟|Tokai/Hokuriku|37.9161|139.0364|Hakusan Park|Avg 13°C|4/2|4/7",
+    "Toyama|富山|Tokai/Hokuriku|36.6953|137.2113|Matsukawa Riverside|Avg 14°C|3/30|4/2",
+    "Kanazawa|金沢|Tokai/Hokuriku|36.5613|136.6562|Kenrokuen|Avg 14°C|3/29|4/4",
+    "Fukui|福井|Tokai/Hokuriku|36.0641|136.2196|Asuwayama Park|Avg 15°C|3/29|4/2",
+    "Hikone|彦根|Kinki|35.2745|136.2596|Hikone Castle|Avg 15°C|3/27|4/2",
+    "Kyoto|京都|Kinki|35.0116|135.7681|Maruyama Park|Avg 16°C|3/24|3/30",
+    "Osaka|大阪|Kinki|34.6937|135.5023|Osaka Castle Park|Avg 17°C|3/25|4/1",
+    "Kobe|神戸|Kinki|34.6901|135.1955|Nunobiki Herb Garden|Avg 17°C|3/25|4/2",
+    "Nara|奈良|Kinki|34.6851|135.8048|Nara Park|Avg 16°C|3/24|4/1",
+    "Wakayama|和歌山|Kinki|34.2305|135.1708|Wakayama Castle|Avg 17°C|3/23|3/30",
+    "Okayama|岡山|Chugoku/Shikoku|34.6551|133.9195|Korakuen Garden|Avg 17°C|3/25|3/31",
+    "Hiroshima|広島|Chugoku/Shikoku|34.3853|132.4553|Peace Memorial Park|Avg 18°C|3/19|3/26",
+    "Matsue|松江|Chugoku/Shikoku|35.4681|133.0484|Matsue Castle|Avg 15°C|3/28|4/2",
+    "Tottori|鳥取|Chugoku/Shikoku|35.5011|134.2351|Koyamaike Park|Avg 15°C|3/28|4/2",
+    "Takamatsu|高松|Chugoku/Shikoku|34.3428|134.0466|Ritsurin Garden|Avg 17°C|3/24|3/31",
+    "Tokushima|徳島|Chugoku/Shikoku|34.0703|134.5548|Tokushima Central Park|Avg 17°C|3/27|4/3",
+    "Matsuyama|松山|Chugoku/Shikoku|33.8392|132.7657|Matsuyama Castle|Avg 18°C|3/21|3/31",
+    "Kochi|高知|Chugoku/Shikoku|33.5597|133.5311|Kochi Castle|Avg 19°C|3/16|3/25",
+    "Shimonoseki|下関|Chugoku/Shikoku|33.9578|130.9415|Hinoyama Park|Avg 17°C|3/25|4/3",
+    "Fukuoka|福岡|Kyushu|33.5902|130.4017|Maizuru Park|Avg 18°C|3/22|3/31",
+    "Oita|大分|Kyushu|33.2396|131.6093|Oita Castle Ruins Park|Avg 18°C|3/25|4/4",
+    "Nagasaki|長崎|Kyushu|32.7503|129.8777|Tateyama Park|Avg 18°C|3/24|4/2",
+    "Saga|佐賀|Kyushu|33.2635|130.3009|Saga Castle Park|Avg 18°C|3/21|3/29",
+    "Kumamoto|熊本|Kyushu|32.8031|130.7079|Kumamoto Castle|Avg 19°C|3/21|3/30",
+    "Miyazaki|宮崎|Kyushu|31.9111|131.4239|Miyazaki Shrine|Avg 20°C|3/23|4/2",
+    "Kagoshima|鹿児島|Kyushu|31.5966|130.5571|Sengan-en|Avg 20°C|3/27|4/5",
+    "Naze|名瀬|Amami/Okinawa|28.3772|129.4938|Naze Port Greenbelt|Avg 21°C|2/1|",
+    "Naha|那覇|Amami/Okinawa|26.2124|127.6809|Fukushuen Garden|Avg 23°C|1/18|2/3",
+    "Minamidaitojima|南大東島|Amami/Okinawa|25.8280|131.2310|Minami Daito Village Park|Avg 24°C|3/2|",
+    "Miyakojima|宮古島|Amami/Okinawa|24.8056|125.2811|Painagama Coast Park|Avg 24°C|1/9|2/6",
+    "Ishigakijima|石垣島|Amami/Okinawa|24.3448|124.1572|Banna Park|Avg 24°C|2/4|2/18"
+  ];
+  var SPOT_ROWS = [
+    "Tokyo|Ueno Park|上野恩賜公園|park|1|0|0|0.010|-0.006",
+    "Tokyo|Chidorigafuchi Green Way|千鳥ヶ淵緑道|river|1|1|1|0.012|-0.018",
+    "Tokyo|Meguro River|目黒川|river|1|0|1|-0.030|-0.010",
+    "Tokyo|Koishikawa Korakuen|小石川後楽園|garden|1|1|1|0.024|-0.008",
+    "Tokyo|Shinjuku Gyoen|新宿御苑|garden|0|1|2|-0.005|-0.012",
+    "Kyoto|Maruyama Park|円山公園|park|1|0|0|0.004|0.005",
+    "Kyoto|Daigoji Temple|醍醐寺|temple|1|1|2|-0.028|0.042",
+    "Kyoto|Keage Incline|蹴上インクライン|river|0|1|1|-0.004|0.012",
+    "Kyoto|Sewaritei Embankment|淀川河川公園背割堤地区|river|1|2|2|-0.060|0.045",
+    "Osaka|Osaka Castle Park|大阪城公園|castle|1|0|0|0.006|0.014",
+    "Osaka|Kema Sakuranomiya Park|毛馬桜之宮公園|river|0|0|1|0.040|0.002",
+    "Osaka|Expo 70 Commemorative Park|万博記念公園|park|0|2|2|0.050|0.070",
+    "Osaka|Osaka Mint Bureau|造幣局 桜の通り抜け|garden|0|4|4|0.018|0.008",
+    "Yokohama|Sankeien Garden|三溪園|garden|0|0|0|-0.020|0.030",
+    "Yokohama|Ooka River Promenade|大岡川プロムナード|river|0|0|1|-0.010|-0.008",
+    "Yokohama|Mitsuike Park|三ツ池公園|park|0|1|2|0.030|-0.020",
+    "Nagoya|Tsuruma Park|鶴舞公園|park|1|0|0|-0.012|0.000",
+    "Nagoya|Meijo Park|名城公園|park|0|1|1|0.018|-0.015",
+    "Nagoya|Yamazaki River|山崎川四季の道|river|0|1|2|-0.028|0.020",
+    "Fukuoka|Maizuru Park|舞鶴公園|castle|1|0|0|0.008|-0.010",
+    "Fukuoka|Nishi Park|西公園|park|0|0|1|0.012|-0.028",
+    "Fukuoka|Atago Shrine Approach|愛宕神社|temple|0|1|2|0.040|-0.055",
+    "Sapporo|Maruyama Park|円山公園|park|0|0|0|-0.002|-0.030",
+    "Sapporo|Nakajima Park|中島公園|park|0|1|1|-0.022|0.010",
+    "Sapporo|Moerenuma Park|モエレ沼公園|park|0|2|2|0.030|0.100",
+    "Hakodate|Goryokaku Park|五稜郭公園|castle|1|0|0|0.010|0.000",
+    "Hakodate|Hakodate Park|函館公園|park|0|1|1|-0.010|-0.015",
+    "Sendai|Tsutsujigaoka Park|榴岡公園|park|0|0|0|0.012|0.010",
+    "Sendai|Mikamine Park|三神峯公園|park|0|1|1|-0.040|-0.020",
+    "Sendai|Shiroishi River Hitome Senbonzakura|白石川堤一目千本桜|river|1|2|2|-0.120|-0.030",
+    "Aomori|Hirosaki Castle Park|弘前公園|castle|1|0|0|0.020|-0.140",
+    "Aomori|Ashino Park|芦野公園|park|0|2|2|0.220|-0.120",
+    "Kanazawa|Kenrokuen|兼六園|garden|1|0|0|-0.010|0.010",
+    "Kanazawa|Utatsuyama Park|卯辰山公園|park|0|1|1|0.020|0.024",
+    "Hiroshima|Peace Memorial Park|平和記念公園|park|0|0|0|0.000|0.000",
+    "Hiroshima|Hijiyama Park|比治山公園|park|0|1|1|-0.020|0.022",
+    "Kofu|Maizuru Castle Park|舞鶴城公園|castle|0|0|0|0.010|0.000",
+    "Kofu|Kawaguchiko North Shore|河口湖畔 北岸|lake|1|3|3|0.160|0.010",
+    "Kofu|Arakurayama Sengen Park|新倉山浅間公園|park|1|3|4|0.140|0.040",
+    "Nara|Nara Park|奈良公園|park|0|0|0|0.010|0.010",
+    "Nara|Saho River|佐保川|river|0|1|1|0.012|-0.012",
+    "Kumamoto|Kumamoto Castle|熊本城|castle|1|0|0|0.008|-0.006",
+    "Kumamoto|Suizenji Jojuen|水前寺成趣園|garden|0|1|1|-0.015|0.028",
+    "Matsuyama|Matsuyama Castle|松山城|castle|0|0|0|0.010|0.000",
+    "Matsuyama|Dogo Park|道後公園|park|0|1|1|0.020|0.020",
+    "Akita|Senshu Park|千秋公園|castle|1|0|0|0.006|-0.004",
+    "Akita|Taiheizan Resort Park|太平山リゾート公園|park|0|1|1|0.065|0.020",
+    "Morioka|Morioka Castle Ruins Park|盛岡城跡公園|castle|1|0|0|-0.006|0.004",
+    "Morioka|Takamatsu Park|高松公園|park|0|1|1|0.024|-0.018",
+    "Fukushima|Hanamiyama Park|花見山公園|park|1|0|0|0.040|0.030",
+    "Fukushima|Shinobuyama Park|信夫山公園|park|0|1|1|0.018|-0.010",
+    "Mito|Kairakuen|偕楽園|garden|1|0|0|0.010|-0.010",
+    "Mito|Sakura River Promenade|桜川緑地|river|0|1|1|-0.010|0.012",
+    "Utsunomiya|Hachimanyama Park|八幡山公園|park|1|0|0|0.010|0.008",
+    "Utsunomiya|Kinugawa River Bank|鬼怒川河川敷|river|0|2|2|0.060|0.050",
+    "Maebashi|Maebashi Park|前橋公園|park|1|0|0|0.004|-0.008",
+    "Maebashi|Shikishima Park|敷島公園|park|0|1|1|0.010|0.040",
+    "Kumagaya|Arakawa Riverbank|荒川桜堤|river|1|0|0|0.000|0.000",
+    "Kumagaya|Kumagaya Sakura Tsutsumi|熊谷桜堤|river|1|1|1|0.008|-0.012",
+    "Nagano|Joyama Park|城山公園|park|1|0|0|0.006|-0.008",
+    "Nagano|Zenkoji Temple Area|善光寺周辺|temple|0|1|2|0.012|0.010",
+    "Shizuoka|Sumpu Castle Park|駿府城公園|castle|1|0|0|0.002|0.002",
+    "Shizuoka|Nihondaira Yume Terrace|日本平夢テラス|park|0|1|1|0.032|0.070",
+    "Shizuoka|Abe River Riverside|安倍川河川敷|river|0|0|1|-0.012|-0.020",
+    "Gifu|Gifu Park|岐阜公園|park|1|0|0|0.004|0.004",
+    "Gifu|Sunomata Castle|墨俣一夜城|castle|1|1|1|-0.045|-0.090",
+    "Tsu|Tsu Castle Ruins|津城跡|castle|1|0|0|0.004|-0.004",
+    "Tsu|Kairaku Park|偕楽公園|park|0|1|1|0.008|0.018",
+    "Niigata|Hakusan Park|白山公園|park|1|0|0|0.006|-0.006",
+    "Niigata|Shinano Riverbank|信濃川やすらぎ堤|river|0|1|1|-0.010|0.020",
+    "Toyama|Matsukawa Riverside|松川べり|river|1|0|0|0.000|0.000",
+    "Toyama|Fugan Canal Kansui Park|富岩運河環水公園|park|0|1|1|0.014|0.024",
+    "Fukui|Asuwayama Park|足羽山公園|park|1|0|0|0.004|0.006",
+    "Fukui|Asuwa River Cherry Row|足羽川桜並木|river|1|1|1|-0.010|-0.008",
+    "Hikone|Hikone Castle|彦根城|castle|1|0|0|0.002|-0.002",
+    "Hikone|Genkyuen Garden|玄宮園|garden|0|1|1|0.005|0.004",
+    "Kobe|Nunobiki Herb Garden|布引ハーブ園|garden|1|0|0|0.020|-0.010",
+    "Kobe|Oji Zoo Cherry Avenue|王子動物園 桜並木|park|0|1|1|-0.018|0.015",
+    "Wakayama|Wakayama Castle|和歌山城|castle|1|0|0|0.006|-0.006",
+    "Wakayama|Kimiidera Temple|紀三井寺|temple|1|0|1|-0.040|0.030",
+    "Okayama|Korakuen Garden|後楽園|garden|1|0|0|0.004|0.002",
+    "Okayama|Asahikawa Sakura Road|旭川さくらみち|river|0|1|1|0.012|-0.016",
+    "Matsue|Matsue Castle|松江城|castle|1|0|0|0.002|0.002",
+    "Matsue|Shinji Lake Shore|宍道湖畔|lake|0|1|1|-0.005|-0.020",
+    "Tottori|Koyamaike Park|湖山池公園|lake|1|0|0|0.000|0.000",
+    "Tottori|Tottori Castle Ruins|鳥取城跡 久松公園|castle|1|1|1|0.012|0.008",
+    "Takamatsu|Ritsurin Garden|栗林公園|garden|1|0|0|0.006|-0.004",
+    "Takamatsu|Tamamo Park|玉藻公園|castle|0|1|1|-0.008|0.006",
+    "Tokushima|Tokushima Central Park|徳島中央公園|park|1|0|0|0.006|-0.006",
+    "Tokushima|Bizan Park|眉山公園|park|0|1|1|0.040|0.018",
+    "Kochi|Kochi Castle|高知城|castle|1|0|0|0.004|0.004",
+    "Kochi|Kagamigawa Riverside|鏡川河畔|river|0|1|1|-0.018|-0.010",
+    "Shimonoseki|Hinoyama Park|火の山公園|park|1|0|0|0.020|0.010",
+    "Shimonoseki|Mimosusogawa Park|みもすそ川公園|park|0|1|1|-0.010|-0.016",
+    "Oita|Oita Castle Ruins Park|大分城址公園|castle|1|0|0|0.002|-0.002",
+    "Oita|Beppu Park|別府公園|park|0|1|1|0.120|-0.010",
+    "Nagasaki|Tateyama Park|立山公園|park|1|0|0|0.006|-0.006",
+    "Nagasaki|Omura Park|大村公園|castle|1|1|1|0.140|0.020",
+    "Saga|Saga Castle Park|佐賀城公園|castle|1|0|0|0.002|-0.002",
+    "Saga|Ogi Park|小城公園|park|1|1|1|0.090|-0.050",
+    "Miyazaki|Miyazaki Shrine|宮崎神宮|temple|1|0|0|0.002|-0.002",
+    "Miyazaki|Heiwadai Park|平和台公園|park|0|1|1|0.020|0.030",
+    "Kagoshima|Sengan-en|仙巌園|garden|1|0|0|0.006|0.006",
+    "Kagoshima|Yoshino Park|吉野公園|park|0|1|1|0.055|0.030",
+    "Naha|Fukushuen Garden|福州園|garden|1|0|0|0.002|0.002",
+    "Naha|Yogi Park|与儀公園|park|1|0|1|0.014|-0.008",
+    "Ishigakijima|Banna Park|バンナ公園|park|1|0|0|0.020|0.010",
+    "Miyakojima|Painagama Coast Park|パイナガマ海空すこやか公園|lake|1|0|0|0.012|-0.008",
+    "Sapporo|Higashimyo Park|東明公園|park|1|2|2|0.070|-0.012",
+    "Hakodate|Matsumae Park|松前公園|castle|1|4|4|-0.140|-0.150",
+    "Hakodate|Oniushi Park|オニウシ公園|park|0|1|1|-0.100|0.060",
+    "Hakodate|Nijukken Road Cherry Avenue|二十間道路桜並木|river|1|5|5|-0.020|0.170",
+    "Muroran|Toyako Onsen|洞爺湖温泉|lake|0|2|2|-0.070|-0.010",
+    "Muroran|Usu Zenkoji Natural Park|有珠善光寺自然公園|temple|0|2|2|-0.090|-0.030",
+    "Muroran|Noboribetsu Sakura Avenue|登別桜並木|river|0|1|1|0.050|0.020",
+    "Morioka|Kitakami Tenshochi|北上展勝地|river|1|2|2|-0.080|-0.040",
+    "Sendai|Funaoka Castle Ruins Park|船岡城址公園|castle|1|1|1|-0.100|-0.020",
+    "Akita|Kakunodate Bukeyashiki Street|角館武家屋敷通り|garden|1|3|3|0.180|0.060",
+    "Akita|Hinokinai River Bank|桧木内川堤のソメイヨシノ|river|1|3|3|0.190|0.075",
+    "Fukushima|Yunokami Onsen Station|湯野上温泉駅の桜|park|0|4|4|-0.110|0.000",
+    "Fukushima|Tsurugajo Park|鶴ヶ城公園|castle|1|2|2|-0.090|-0.040",
+    "Fukushima|Nichuchi Line Weeping Cherry Row|日中線しだれ桜並木|river|1|2|2|-0.060|0.045",
+    "Shizuoka|Chitose River Riverside|千歳川沿い|river|1|0|1|0.120|-0.060",
+    "Shizuoka|Ieyama Sakura Tunnel|家山の桜トンネル|river|1|2|2|-0.060|0.130",
+    "Shizuoka|Fuji Cemetery|冨士霊園|garden|1|2|2|0.160|0.040",
+    "Shizuoka|Oishiji Temple|大石寺|temple|1|2|2|0.120|0.110",
+    "Nagoya|Kisogawa Embankment|木曽川堤|river|1|1|1|-0.110|0.020",
+    "Nagoya|Gojogawa Cherry Row|五条川の桜並木（大口町）|river|1|1|1|-0.040|0.030",
+    "Gifu|Shinkai River Hyakujurozakura|新境川堤「百十郎桜」|river|1|1|1|0.060|0.030",
+    "Fukuoka|Katsuyama Park (Kokura Castle)|勝山公園(小倉城)|castle|1|1|1|0.140|0.080",
+    "Fukuoka|Umi Park|宇美公園|park|1|1|1|0.030|0.035",
+    "Fukuoka|Amagi Park|甘木公園|park|1|2|2|0.130|0.040",
+    "Fukuoka|Kusaba River Cherry Row|草場川の桜並木|river|1|2|2|0.180|0.020",
+    "Fukuoka|Hyugami Dam Senbonzakura|日向神ダムの「千本桜」|lake|1|3|3|0.240|0.000",
+    "Fukuoka|Hosshin Park|発心公園|park|0|2|2|0.220|0.010",
+    "Kumamoto|Kikuchi Park|菊池公園|park|1|1|1|0.090|0.060",
+    "Niigata|Takada Castle Park|高田城址公園|castle|1|3|3|0.160|0.030",
+    "Niigata|Yukyuzan Park|悠久山公園|park|1|2|2|-0.050|0.120",
+    "Toyama|Asahi Funakawa Spring Quartet|あさひ舟川春の四重奏|river|1|1|1|0.180|0.020",
+    "Toyama|Uchikawa Cherry Row|内川周辺の桜並木|river|1|2|2|0.120|0.010",
+    "Toyama|Takaoka Kojo Park|高岡古城公園|castle|1|2|2|0.090|0.035",
+    "Kanazawa|Saigawa Green Space|犀川緑地|river|0|1|1|0.010|-0.030",
+    "Okayama|Tsuyama Castle (Kakuzan Park)|津山城(鶴山公園)|castle|1|2|2|0.210|0.020",
+    "Hiroshima|Senkoji Park|千光寺公園|park|1|1|1|0.140|0.080",
+    "Hiroshima|Kamei Park|亀居公園|park|0|2|2|-0.100|-0.030",
+    "Hiroshima|Yachiyo Lake Shore|八千代湖周辺|lake|0|2|2|0.060|0.090",
+    "Hiroshima|Sera Kozan Fureai no Sato|世羅甲山ふれあいの里|park|1|3|3|0.160|0.030",
+    "Hiroshima|Sagishima Tonomine Senbonzakura|さぎしま塔の峰千本桜|park|1|4|4|0.180|0.100",
+    "Shimonoseki|Kintaikyo Bridge Area|錦帯橋周辺|river|1|2|2|-0.150|-0.020",
+    "Takamatsu|Shiudeyama|紫雲出山|park|1|2|2|-0.160|0.030",
+    "Takamatsu|Konzanji Shrine|金刀比羅宮|temple|1|1|1|-0.090|0.000",
+    "Takamatsu|Asahiyama Forest Park|朝日山森林公園|park|0|2|2|-0.120|0.040",
+    "Takamatsu|Marugame Castle|丸亀城|castle|1|2|2|-0.080|0.015",
+    "Takamatsu|Kotohiki Park|県立琴弾公園|park|1|3|3|-0.200|-0.010",
+    "Matsuyama|Kaisan Park|開山公園|park|1|3|3|-0.150|0.090"
+  ];
+  var SPOT_RANKING_URLS = [
+    "https://r.jina.ai/http://s.n-kishou.co.jp/w/sp/sakura/sakura_rank?ba=all",
+    "https://r.jina.ai/http://s.n-kishou.co.jp/w/sp/sakura/sakura_rank?ba=hokka",
+    "https://r.jina.ai/http://s.n-kishou.co.jp/w/sp/sakura/sakura_rank?ba=touho",
+    "https://r.jina.ai/http://s.n-kishou.co.jp/w/sp/sakura/sakura_rank?ba=kanto",
+    "https://r.jina.ai/http://s.n-kishou.co.jp/w/sp/sakura/sakura_rank?ba=touka",
+    "https://r.jina.ai/http://s.n-kishou.co.jp/w/sp/sakura/sakura_rank?ba=hokur",
+    "https://r.jina.ai/http://s.n-kishou.co.jp/w/sp/sakura/sakura_rank?ba=kinki",
+    "https://r.jina.ai/http://s.n-kishou.co.jp/w/sp/sakura/sakura_rank?ba=chuug",
+    "https://r.jina.ai/http://s.n-kishou.co.jp/w/sp/sakura/sakura_rank?ba=shiko",
+    "https://r.jina.ai/http://s.n-kishou.co.jp/w/sp/sakura/sakura_rank?ba=kyuus"
+  ];
+  var NKISHOU_PREFECTURE_CODES = {
+    "北海道": "01", "青森県": "02", "岩手県": "03", "宮城県": "04", "秋田県": "05", "山形県": "06", "福島県": "07",
+    "茨城県": "08", "栃木県": "09", "群馬県": "10", "埼玉県": "11", "千葉県": "12", "東京都": "13", "神奈川県": "14",
+    "新潟県": "15", "富山県": "16", "石川県": "17", "福井県": "18", "山梨県": "19", "長野県": "20",
+    "岐阜県": "21", "静岡県": "22", "愛知県": "23", "三重県": "24", "滋賀県": "25", "京都府": "26", "大阪府": "27", "兵庫県": "28", "奈良県": "29", "和歌山県": "30",
+    "鳥取県": "31", "島根県": "32", "岡山県": "33", "広島県": "34", "山口県": "35",
+    "徳島県": "36", "香川県": "37", "愛媛県": "38", "高知県": "39",
+    "福岡県": "40", "佐賀県": "41", "長崎県": "42", "熊本県": "43", "大分県": "44", "宮崎県": "45", "鹿児島県": "46"
+  };
+  var PREFECTURE_CITY_MAP = {
+    "北海道": "Sapporo",
+    "青森県": "Aomori",
+    "岩手県": "Morioka",
+    "宮城県": "Sendai",
+    "秋田県": "Akita",
+    "山形県": "Yamagata",
+    "福島県": "Fukushima",
+    "茨城県": "Mito",
+    "栃木県": "Utsunomiya",
+    "群馬県": "Maebashi",
+    "埼玉県": "Kumagaya",
+    "千葉県": "Choshi",
+    "東京都": "Tokyo",
+    "神奈川県": "Yokohama",
+    "山梨県": "Kofu",
+    "長野県": "Nagano",
+    "静岡県": "Shizuoka",
+    "愛知県": "Nagoya",
+    "岐阜県": "Gifu",
+    "三重県": "Tsu",
+    "新潟県": "Niigata",
+    "富山県": "Toyama",
+    "石川県": "Kanazawa",
+    "福井県": "Fukui",
+    "滋賀県": "Hikone",
+    "京都府": "Kyoto",
+    "大阪府": "Osaka",
+    "兵庫県": "Kobe",
+    "奈良県": "Nara",
+    "和歌山県": "Wakayama",
+    "岡山県": "Okayama",
+    "広島県": "Hiroshima",
+    "鳥取県": "Tottori",
+    "島根県": "Matsue",
+    "山口県": "Shimonoseki",
+    "香川県": "Takamatsu",
+    "徳島県": "Tokushima",
+    "愛媛県": "Matsuyama",
+    "高知県": "Kochi",
+    "福岡県": "Fukuoka",
+    "佐賀県": "Saga",
+    "長崎県": "Nagasaki",
+    "熊本県": "Kumamoto",
+    "大分県": "Oita",
+    "宮崎県": "Miyazaki",
+    "鹿児島県": "Kagoshima",
+    "沖縄県": "Naha"
+  };
+  var SPOT_NAME_ALIASES = {
+    "五稜郭公園": { en: "Goryokaku Park", ja: "五稜郭公園" },
+    "函館公園": { en: "Hakodate Park", ja: "函館公園" },
+    "美唄市東明公園": { en: "Higashimyo Park", ja: "東明公園", areaEn: "Bibai", areaJa: "美唄市" },
+    "二十間道路桜並木": { en: "Nijukken Road Cherry Avenue", ja: "二十間道路桜並木", areaEn: "Shinhidaka", areaJa: "新ひだか町" },
+    "松前公園": { en: "Matsumae Park", ja: "松前公園", areaEn: "Matsumae", areaJa: "松前町" },
+    "オニウシ公園": { en: "Oniushi Park", ja: "オニウシ公園", areaEn: "Mori", areaJa: "森町" },
+    "洞爺湖温泉": { en: "Toyako Onsen", ja: "洞爺湖温泉", areaEn: "Toyako", areaJa: "洞爺湖町" },
+    "有珠善光寺自然公園": { en: "Usu Zenkoji Natural Park", ja: "有珠善光寺自然公園", areaEn: "Date", areaJa: "伊達市" },
+    "登別桜並木": { en: "Noboribetsu Sakura Avenue", ja: "登別桜並木", areaEn: "Noboribetsu", areaJa: "登別市" },
+    "北上展勝地": { en: "Kitakami Tenshochi", ja: "北上展勝地", areaEn: "Kitakami", areaJa: "北上市" },
+    "船岡城址公園": { en: "Funaoka Castle Ruins Park", ja: "船岡城址公園", areaEn: "Shibata", areaJa: "柴田町" },
+    "湯野上温泉駅の桜": { en: "Yunokami Onsen Station", ja: "湯野上温泉駅の桜", areaEn: "Shimogo", areaJa: "下郷町" },
+    "鶴ヶ城公園": { en: "Tsurugajo Park", ja: "鶴ヶ城公園", areaEn: "Aizuwakamatsu", areaJa: "会津若松市" },
+    "日中線しだれ桜並木": { en: "Nichuchi Line Weeping Cherry Row", ja: "日中線しだれ桜並木", areaEn: "Kitakata", areaJa: "喜多方市" },
+    "桧木内川堤のソメイヨシノ": { en: "Hinokinai River Bank", ja: "桧木内川堤のソメイヨシノ", areaEn: "Semboku", areaJa: "仙北市" },
+    "千歳川沿い": { en: "Chitose River Riverside", ja: "千歳川沿い", areaEn: "Atami, Shizuoka", areaJa: "熱海市" },
+    "木曽川堤": { en: "Kisogawa Embankment", ja: "木曽川堤", areaEn: "Ichinomiya", areaJa: "一宮市" },
+    "五条川の桜並木(大口町)": { en: "Gojogawa Cherry Row", ja: "五条川の桜並木（大口町）", areaEn: "Oguchi", areaJa: "大口町" },
+    "家山の桜トンネル": { en: "Ieyama Sakura Tunnel", ja: "家山の桜トンネル", areaEn: "Shimada", areaJa: "島田市川根町" },
+    "冨士霊園": { en: "Fuji Cemetery", ja: "冨士霊園", areaEn: "Oyama", areaJa: "小山町" },
+    "新境川堤「百十郎桜」": { en: "Shinkai River Hyakujurozakura", ja: "新境川堤「百十郎桜」", areaEn: "Kakamigahara", areaJa: "各務原市" },
+    "大石寺": { en: "Oishiji Temple", ja: "大石寺", areaEn: "Fujinomiya", areaJa: "富士宮市" },
+    "勝山公園(小倉城)": { en: "Katsuyama Park (Kokura Castle)", ja: "勝山公園(小倉城)", areaEn: "Kitakyushu", areaJa: "北九州市小倉北区" },
+    "宇美公園": { en: "Umi Park", ja: "宇美公園", areaEn: "Umi", areaJa: "宇美町" },
+    "甘木公園": { en: "Amagi Park", ja: "甘木公園", areaEn: "Asakura", areaJa: "朝倉市" },
+    "草場川の桜並木": { en: "Kusaba River Cherry Row", ja: "草場川の桜並木", areaEn: "Asakura", areaJa: "朝倉市" },
+    "日向神ダムの「千本桜」": { en: "Hyugami Dam Senbonzakura", ja: "日向神ダムの「千本桜」", areaEn: "Yame", areaJa: "八女市" },
+    "発心公園": { en: "Hosshin Park", ja: "発心公園", areaEn: "Kurume", areaJa: "久留米市草野町" },
+    "菊池公園": { en: "Kikuchi Park", ja: "菊池公園", areaEn: "Kikuchi", areaJa: "菊池市" },
+    "あさひ舟川春の四重奏": { en: "Asahi Funakawa Spring Quartet", ja: "あさひ舟川春の四重奏", areaEn: "Asahi Town", areaJa: "朝日町" },
+    "高田城址公園": { en: "Takada Castle Park", ja: "高田城址公園", areaEn: "Joetsu", areaJa: "上越市" },
+    "悠久山公園": { en: "Yukyuzan Park", ja: "悠久山公園", areaEn: "Nagaoka", areaJa: "長岡市" },
+    "内川周辺の桜並木": { en: "Uchikawa Cherry Row", ja: "内川周辺の桜並木", areaEn: "Imizu", areaJa: "射水市" },
+    "犀川緑地": { en: "Saigawa Green Space", ja: "犀川緑地", areaEn: "Kanazawa", areaJa: "金沢市" },
+    "高岡古城公園": { en: "Takaoka Kojo Park", ja: "高岡古城公園", areaEn: "Takaoka", areaJa: "高岡市" },
+    "千光寺公園": { en: "Senkoji Park", ja: "千光寺公園", areaEn: "Onomichi", areaJa: "尾道市" },
+    "津山城(鶴山公園)": { en: "Tsuyama Castle (Kakuzan Park)", ja: "津山城(鶴山公園)", areaEn: "Tsuyama", areaJa: "津山市" },
+    "宮島": { en: "Miyajima", ja: "宮島", areaEn: "Itsukushima", areaJa: "廿日市市宮島町" },
+    "錦帯橋周辺": { en: "Kintaikyo Bridge Area", ja: "錦帯橋周辺", areaEn: "Iwakuni", areaJa: "岩国市" },
+    "亀居公園": { en: "Kamei Park", ja: "亀居公園", areaEn: "Otake", areaJa: "大竹市" },
+    "八千代湖周辺": { en: "Yachiyo Lake Shore", ja: "八千代湖周辺", areaEn: "Akitakata", areaJa: "安芸高田市" },
+    "世羅甲山ふれあいの里": { en: "Sera Kozan Fureai no Sato", ja: "世羅甲山ふれあいの里", areaEn: "Sera", areaJa: "世羅町" },
+    "さぎしま塔の峰千本桜": { en: "Sagishima Tonomine Senbonzakura", ja: "さぎしま塔の峰千本桜", areaEn: "Mihara", areaJa: "三原市佐木島" },
+    "紫雲出山": { en: "Shiudeyama", ja: "紫雲出山", areaEn: "Mitoyo", areaJa: "三豊市" },
+    "公渕森林公園": { en: "Kibuchi Forest Park", ja: "公渕森林公園", areaEn: "Takamatsu", areaJa: "高松市" },
+    "開山公園": { en: "Kaisan Park", ja: "開山公園", areaEn: "Imabari", areaJa: "今治市伯方町" },
+    "金刀比羅宮": { en: "Konzanji Shrine", ja: "金刀比羅宮", areaEn: "Kotohira", areaJa: "琴平町" },
+    "朝日山森林公園": { en: "Asahiyama Forest Park", ja: "朝日山森林公園", areaEn: "Mitoyo", areaJa: "三豊市" },
+    "丸亀城": { en: "Marugame Castle", ja: "丸亀城", areaEn: "Marugame", areaJa: "丸亀市" },
+    "県立琴弾公園": { en: "Kotohiki Park", ja: "県立琴弾公園", areaEn: "Kanonji", areaJa: "観音寺市" }
+  };
+  var FALLBACK_CITIES = buildFallbackCities();
+  var KNOWN_CITY_NAMES = FALLBACK_CITIES.map(function(city) { return city.name; }).sort(function(a, b) {
+    return b.length - a.length;
+  });
+
+  /* ── Dark mode ── */
+  if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    document.documentElement.classList.add("dark");
+  }
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function(e) {
+    if (e.matches) { document.documentElement.classList.add("dark"); }
+    else { document.documentElement.classList.remove("dark"); }
+    if (map && currentBaseLayerKind === "fallback") {
+      setBaseTileLayer("fallback");
+    }
+  });
+
+  /* ── Data ── */
+  var cities = [];
+  var spots = [];
+  var rankedSpotRows = [];
+  var liveSpotRows = [];
+  var regions = ["All"];
+  var SPOT_TAG_ORDER = ["all", "park", "castle", "river", "garden", "temple", "lake"];
+  var SPOT_TIMING_ORDER = ["all", "peak", "upcoming", "falling"];
+  var SPOT_SOURCE_ORDER = ["all", "loaded", "seeded", "popular"];
+  var currentLang = detectLanguage();
+  var statusMeta = {
+    pending:    { label:"Awaiting Forecast", icon:"…", color:"--bloom-pending" },
+    not_yet:    { label:"Not Yet",    icon:"🌱", color:"--bloom-not-yet" },
+    budding:    { label:"Budding",    icon:"🌿", color:"--bloom-budding" },
+    blooming:   { label:"Blooming",   icon:"🌸", color:"--bloom-blooming" },
+    full_bloom: { label:"Full Bloom", icon:"💮", color:"--bloom-full" },
+    falling:    { label:"Falling",    icon:"🍃", color:"--bloom-falling" },
+    ended:      { label:"Ended",      icon:"✓",  color:"--bloom-ended" }
+  };
+
+  /* ── State ── */
+  var selectedCity = null;
+  var selectedSpot = null;
+  var activeRegion = "All";
+  var listMode = "cities";
+  var activeSpotTag = "all";
+  var activeSpotTiming = "all";
+  var activeSpotSource = "all";
+  var searchTerm = "";
+  var cityMarkerMap = {};
+  var spotMarkerMap = {};
+  var cityMarkerLayer = null;
+  var spotMarkerLayer = null;
+  var currentTileLayer = null;
+  var tileFallbackApplied = false;
+  var currentBaseLayerKind = "primary";
+  var map;
+  var sidebarOpen = false;
+  var currentDate = clampDate(new Date());
+  var sourceState = { mode: "loading", updatedText: "", liveCount: 0, message: "" };
+  var spotDataState = { mode: "idle", loaded: 0, total: 0, message: "" };
+  var spotLoadPromise = null;
+  var spotDetailCache = {};
+  var SPOT_DETAIL_CONCURRENCY = 6;
+  var SPOT_BATCH_CONCURRENCY = 6;
+  var FETCH_TIMEOUT_MS = 16000;
+  var SOURCE_CACHE_PREFIX = "sakura-cache-v1:";
+  var SOURCE_CACHE_TTL_MS = 6 * 60 * 60 * 1000;
+  var spotLoadController = null;
+  var spotsByCityName = {};
+  var filteredCitiesCacheKey = "";
+  var filteredCitiesCacheValue = [];
+  var filteredSpotsCacheKey = "";
+  var filteredSpotsCacheValue = [];
+  var derivedStateVersion = 0;
+  var renderFrameId = 0;
+  var pendingRenderFlags = null;
+  var searchDebounceTimer = 0;
+
+  /* ── Helpers ── */
+  function escapeHtml(value) {
+    return String(value == null ? "" : value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function isAbortError(error) {
+    return !!(error && (error.name === "AbortError" || error.code === 20));
+  }
+
+  function createAbortSignal(options) {
+    return options && options.signal ? options.signal : null;
+  }
+
+  function getSourceCacheStorage() {
+    try {
+      return window.sessionStorage;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function readCachedText(cacheKey, maxAgeMs) {
+    if (!cacheKey || !maxAgeMs) return "";
+    var storage = getSourceCacheStorage();
+    if (!storage) return "";
+    try {
+      var raw = storage.getItem(SOURCE_CACHE_PREFIX + cacheKey);
+      if (!raw) return "";
+      var payload = JSON.parse(raw);
+      if (!payload || typeof payload.text !== "string" || typeof payload.savedAt !== "number") return "";
+      if ((Date.now() - payload.savedAt) > maxAgeMs) {
+        storage.removeItem(SOURCE_CACHE_PREFIX + cacheKey);
+        return "";
+      }
+      return payload.text;
+    } catch (error) {
+      return "";
+    }
+  }
+
+  function writeCachedText(cacheKey, text) {
+    if (!cacheKey || typeof text !== "string") return;
+    var storage = getSourceCacheStorage();
+    if (!storage) return;
+    try {
+      storage.setItem(SOURCE_CACHE_PREFIX + cacheKey, JSON.stringify({ savedAt: Date.now(), text: text }));
+    } catch (error) {
+      /* Ignore storage failures. */
+    }
+  }
+
+  async function runThrottledTasks(items, limit, worker) {
+    var results = new Array(items.length);
+    var index = 0;
+    var workerCount = Math.min(Math.max(limit || 1, 1), items.length || 1);
+
+    async function consume() {
+      while (index < items.length) {
+        var currentIndex = index;
+        index += 1;
+        try {
+          results[currentIndex] = { status: "fulfilled", value: await worker(items[currentIndex], currentIndex) };
+        } catch (error) {
+          results[currentIndex] = { status: "rejected", reason: error };
+        }
+      }
+    }
+
+    var workers = [];
+    for (var i = 0; i < workerCount; i++) {
+      workers.push(consume());
+    }
+    await Promise.all(workers);
+    for (var resultIndex = 0; resultIndex < results.length; resultIndex++) {
+      if (results[resultIndex] && results[resultIndex].status === "rejected" && isAbortError(results[resultIndex].reason)) {
+        throw results[resultIndex].reason;
+      }
+    }
+    return results;
+  }
+
+  function createSpotLoadController() {
+    if (spotLoadController) spotLoadController.abort();
+    spotLoadController = new AbortController();
+    return spotLoadController;
+  }
+
+  function cancelSpotDataLoad() {
+    if (!spotLoadController) return;
+    spotLoadController.abort();
+    spotLoadController = null;
+  }
+
+  function invalidateDerivedState() {
+    derivedStateVersion += 1;
+    filteredCitiesCacheKey = "";
+    filteredCitiesCacheValue = [];
+    filteredSpotsCacheKey = "";
+    filteredSpotsCacheValue = [];
+  }
+
+  function buildSpotIndex(spotList) {
+    var index = {};
+    spotList.forEach(function(spot) {
+      if (!index[spot.cityName]) index[spot.cityName] = [];
+      index[spot.cityName].push(spot);
+    });
+    Object.keys(index).forEach(function(cityName) {
+      index[cityName].sort(function(a, b) {
+        if (a.featured !== b.featured) return a.featured ? -1 : 1;
+        return a.order - b.order;
+      });
+    });
+    return index;
+  }
+
+  function mergeRenderFlags(base, next) {
+    var merged = base || {};
+    Object.keys(next || {}).forEach(function(key) {
+      if (next[key]) merged[key] = true;
+    });
+    return merged;
+  }
+
+  function flushScheduledRender() {
+    var flags = pendingRenderFlags || {};
+    renderFrameId = 0;
+    pendingRenderFlags = null;
+    if (flags.translations) updateStaticTranslations();
+    if (flags.dateDisplay) updateDateDisplay();
+    if (flags.sourceDisplay) updateSourceDisplay();
+    if (flags.loadingStatus) updateLoadingStatus();
+    if (flags.markers) refreshMarkers();
+    if (flags.regions) renderRegionFilters();
+    if (flags.spotFilters) renderSpotFilters();
+    if (flags.cityList) renderCityList();
+    if (flags.statBar) updateStatBar();
+    if (flags.mapInfo) updateMapInfo();
+    if (flags.fit) fitVisibleCities();
+  }
+
+  function scheduleRender(flags) {
+    pendingRenderFlags = mergeRenderFlags(pendingRenderFlags, flags);
+    if (renderFrameId) return;
+    renderFrameId = window.requestAnimationFrame(flushScheduledRender);
+  }
+
+  function cancelScheduledRender() {
+    if (!renderFrameId) return;
+    window.cancelAnimationFrame(renderFrameId);
+    renderFrameId = 0;
+    pendingRenderFlags = null;
+  }
+
+  function scheduleIdleTask(task, timeout) {
+    if (window.requestIdleCallback) {
+      window.requestIdleCallback(task, { timeout: timeout || 1000 });
+      return;
+    }
+    window.setTimeout(task, Math.min(timeout || 1000, 400));
+  }
+
+  function prefersReducedMotion() {
+    return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  }
+
+  var I18N = {
+    en: {
+      appTitle: "Sakura Forecast <span>2026</span>", legendButton: "Legend", legendTitle: "Bloom Status",
+      searchPlaceholder: "Search city, spot, or region…", mobileList: "City List", mobileMap: "Map", allRegions: "All",
+      citiesView: "Cities", spotsView: "Spots", featuredSpots: "Nearby spots", parentCity: "Base city", spotForecast: "Spot forecast", localForecast: "Local forecast", spotSource: "Spot source", spotListHint: "Showing more place-level sakura forecasts around each city.",
+      filterType: "Spot type", filterTiming: "Forecast timing", filterSource: "Spot source", filterAllTypes: "All types", filterAllTiming: "All timing", filterAllSources: "All sources",
+      statuses: { pending: "Awaiting Forecast", not_yet: "Not Yet", budding: "Budding", blooming: "Blooming", full_bloom: "Full Bloom", falling: "Falling", ended: "Ended" },
+      bloomCycle: "Bloom cycle", firstBloom: "First bloom", fullBloom: "Full bloom", bestSpot: "Best spot", region: "Region", weather: "Weather", source: "Source", tip: "Tip",
+      officialGuide: "Official sakura guide", mapsLink: "Open in Maps", allSpots: "More spot info", forecastPending: "Forecast window pending", forecastUnavailable: "Forecast unavailable",
+      expectedToday: "Expected to bloom today", bloomIn: "Bloom in {days} {unit}", peakToday: "Peak begins today", fullIn: "Full bloom in {days} {unit}", peakNow: "Peak viewing now", petalsFalling: "Petals starting to fall", bloomOver: "Bloom period likely over",
+      noBloomDate: "WeatherMap has not published a bloom date for this city yet.", firstBloomToday: "First bloom is expected today.", firstBloomIn: "First bloom is expected in {days} {unit}.", fullBloomToday: "Full bloom is expected today.", fullBloomIn: "Full bloom is expected in {days} {unit}.", bestWindow: "This city is in its best viewing window right now.", visitSoon: "Petals are falling; visit soon for the last good views.", seasonDone: "The main bloom window has likely finished for this season.",
+      loadingSource: "Loading live forecast from <strong>WeatherMap</strong>…", liveSource: "Live dates from <strong>WeatherMap</strong>{updated}.", liveUpdated: " · updated {text}", fallbackSource: "Showing built-in fallback dates. Live WeatherMap fetch failed.",
+      mapInfo: "🌸 {count} {unit} are blooming or at peak on {date}{suffix}", suffixLiveUpdated: " · WeatherMap updated {text}", suffixLive: " · WeatherMap live data", suffixFallback: " · fallback dates in use", suffixLoading: " · loading live data", mapLoading: "Loading Japan-wide Sakura forecast data…",
+      statBar: "<strong>{count}</strong> of {total} {unit} blooming or at peak · {source}", statSourceLive: "live dates from WeatherMap", statSourceFallback: "fallback dates active", statLoading: "Loading forecasts…", noCities: "No cities found", noSpots: "No spots found", loadingList: "Loading live city and spot forecasts…", loadingCities: "Loading live city forecasts…", loadingSpots: "Loading spot forecasts and details…", loadingProgress: "{loaded}/{total}", mapLoadingSpots: "Loading sakura spot forecasts…", day: "day", days: "days", citiesUnit: "cities", spotsUnit: "spots",
+      spotTags: { park: "Park", castle: "Castle", river: "River walk", garden: "Garden", temple: "Temple", lake: "Lakefront" },
+      spotTiming: { peak: "Peak Now", upcoming: "Upcoming", falling: "Falling / Ended" },
+      spotSourceFilter: { loaded: "Loaded rankings", seeded: "Seeded spots", popular: "Popular only" },
+      spotDerived: "Forecast adjusted from {city}", featuredRanked: "Popular spot", prefecture: "Prefecture", localArea: "Local area", rank: "Rank", loadedSource: "N-kishou ranking", seededSource: "Curated spot set", spotLiveSource: "N-kishou spot page", cityLiveForecast: "Live city forecast", fallbackCityForecast: "Built-in city forecast", spotExactForecast: "Exact spot forecast", spotCityForecast: "Using {city} city forecast", spotCityFallback: "Using {city} fallback forecast", spotForecastUnavailable: "Spot forecast unavailable"
+    },
+    "zh-Hant": {
+      appTitle: "櫻花預報 <span>2026</span>", legendButton: "圖例", legendTitle: "花況狀態",
+      searchPlaceholder: "搜尋城市、景點或地區…", mobileList: "城市清單", mobileMap: "地圖", allRegions: "全部",
+      citiesView: "城市", spotsView: "景點", featuredSpots: "周邊賞櫻點", parentCity: "基準城市", spotForecast: "景點預測", localForecast: "景點花況", spotSource: "景點來源", spotListHint: "顯示每個城市周邊更多賞櫻點與在地預測。",
+      filterType: "景點類型", filterTiming: "預測時段", filterSource: "資料來源", filterAllTypes: "全部類型", filterAllTiming: "全部時段", filterAllSources: "全部來源",
+      statuses: { pending: "等待預報", not_yet: "尚未開花", budding: "含苞", blooming: "開花中", full_bloom: "滿開", falling: "吹雪中", ended: "已結束" },
+      bloomCycle: "花期進度", firstBloom: "初開日期", fullBloom: "滿開日期", bestSpot: "推薦景點", region: "地區", weather: "氣候", source: "資料來源", tip: "旅遊提示",
+      officialGuide: "官方櫻花導覽", mapsLink: "在地圖開啟", allSpots: "更多景點資訊", forecastPending: "尚待發布預測", forecastUnavailable: "尚無可用預測",
+      expectedToday: "預計今天開花", bloomIn: "距開花還有 {days} {unit}", peakToday: "今天進入滿開期", fullIn: "距滿開還有 {days} {unit}", peakNow: "目前正值最佳觀賞期", petalsFalling: "花瓣開始飄落", bloomOver: "花期可能已接近尾聲",
+      noBloomDate: "WeatherMap 尚未公布這個城市的開花日期。", firstBloomToday: "預計今天初開。", firstBloomIn: "預計 {days} {unit} 後初開。", fullBloomToday: "預計今天滿開。", fullBloomIn: "預計 {days} {unit} 後滿開。", bestWindow: "這個城市目前正值最佳賞櫻期。", visitSoon: "花瓣已開始飄落，想看盛景建議盡快前往。", seasonDone: "這一季主要花期可能已結束。",
+      loadingSource: "正在從 <strong>WeatherMap</strong> 載入即時預報…", liveSource: "<strong>WeatherMap</strong> 即時日期{updated}。", liveUpdated: " · 更新於 {text}", fallbackSource: "目前顯示內建備援日期。WeatherMap 即時抓取失敗。",
+      mapInfo: "🌸 {count} 個{unit}在 {date} 處於開花或滿開狀態{suffix}", suffixLiveUpdated: " · WeatherMap 更新於 {text}", suffixLive: " · WeatherMap 即時資料", suffixFallback: " · 使用備援日期", suffixLoading: " · 正在載入即時資料", mapLoading: "正在載入日本全國櫻花預報…",
+      statBar: "<strong>{count}</strong> / {total} 個{unit}處於開花或滿開 · {source}", statSourceLive: "WeatherMap 即時日期", statSourceFallback: "使用備援日期", statLoading: "正在載入預報…", noCities: "找不到符合的城市", noSpots: "找不到符合的景點", loadingList: "正在載入城市與景點即時預報…", loadingCities: "正在載入城市即時預報…", loadingSpots: "正在載入景點預報與詳細資料…", loadingProgress: "{loaded}/{total}", mapLoadingSpots: "正在載入櫻花景點預報…", day: "天", days: "天", citiesUnit: "城市", spotsUnit: "景點",
+      spotTags: { park: "公園", castle: "城郭", river: "河岸步道", garden: "庭園", temple: "寺社", lake: "湖畔" },
+      spotTiming: { peak: "目前見頃", upcoming: "即將到來", falling: "落花 / 尾聲" },
+      spotSourceFilter: { loaded: "已載入排行", seeded: "內建景點", popular: "僅熱門名所" },
+      spotDerived: "以 {city} 預測微調", featuredRanked: "熱門名所", prefecture: "都道府縣", localArea: "地區細節", rank: "排名", loadedSource: "N-kishou 排行", seededSource: "精選景點集", spotLiveSource: "N-kishou 景點頁", cityLiveForecast: "城市即時預報", fallbackCityForecast: "內建城市備援預報", spotExactForecast: "景點即時預報", spotCityForecast: "使用 {city} 城市預報", spotCityFallback: "使用 {city} 備援預報", spotForecastUnavailable: "景點預報尚不可用"
+    },
+    ja: {
+      appTitle: "桜予報 <span>2026</span>", legendButton: "凡例", legendTitle: "開花ステータス",
+      searchPlaceholder: "都市・スポット・地域を検索…", mobileList: "都市一覧", mobileMap: "地図", allRegions: "すべて",
+      citiesView: "都市", spotsView: "スポット", featuredSpots: "周辺スポット", parentCity: "基準都市", spotForecast: "スポット予想", localForecast: "スポットの見頃", spotSource: "スポット情報元", spotListHint: "各都市の周辺にある名所の予想も一覧で見られます。",
+      filterType: "スポット種別", filterTiming: "予想タイミング", filterSource: "情報ソース", filterAllTypes: "すべての種別", filterAllTiming: "すべての時期", filterAllSources: "すべてのソース",
+      statuses: { pending: "予想待ち", not_yet: "未開花", budding: "つぼみ", blooming: "開花中", full_bloom: "満開", falling: "散り始め", ended: "終了" },
+      bloomCycle: "開花サイクル", firstBloom: "開花日", fullBloom: "満開日", bestSpot: "おすすめスポット", region: "地域", weather: "気候", source: "情報元", tip: "ひとこと",
+      officialGuide: "公式桜ガイド", mapsLink: "地図で開く", allSpots: "スポット情報を見る", forecastPending: "予想公開待ち", forecastUnavailable: "予想未公開",
+      expectedToday: "本日開花予想", bloomIn: "開花まであと {days}{unit}", peakToday: "本日から見頃", fullIn: "満開まであと {days}{unit}", peakNow: "いまが見頃", petalsFalling: "花びらが舞い始めています", bloomOver: "見頃は終盤の可能性があります",
+      noBloomDate: "WeatherMapではこの都市の開花日がまだ公開されていません。", firstBloomToday: "本日開花予想です。", firstBloomIn: "開花予想まであと {days}{unit}です。", fullBloomToday: "本日満開予想です。", fullBloomIn: "満開予想まであと {days}{unit}です。", bestWindow: "この都市はいまがベストな観賞タイミングです。", visitSoon: "花びらが散り始めています。早めの訪問がおすすめです。", seasonDone: "今季の主な見頃は終了した可能性があります。",
+      loadingSource: "<strong>WeatherMap</strong> の最新予想を読み込み中…", liveSource: "<strong>WeatherMap</strong> の最新日付{updated}。", liveUpdated: " ・更新 {text}", fallbackSource: "内蔵の予想日を表示しています。WeatherMapの取得に失敗しました。",
+      mapInfo: "🌸 {date} 時点で {count} {unit}が開花または満開です{suffix}", suffixLiveUpdated: " ・WeatherMap更新 {text}", suffixLive: " ・WeatherMapの最新データ", suffixFallback: " ・予備データを表示中", suffixLoading: " ・最新データを読み込み中", mapLoading: "全国の桜予想データを読み込み中…",
+      statBar: "<strong>{count}</strong> / {total} {unit}が開花または満開 ・ {source}", statSourceLive: "WeatherMap最新日付", statSourceFallback: "予備データ表示中", statLoading: "予想データを読み込み中…", noCities: "一致する都市が見つかりません", noSpots: "一致するスポットが見つかりません", loadingList: "都市とスポットの最新予想を読み込み中…", loadingCities: "都市の最新予想を読み込み中…", loadingSpots: "スポット予想と詳細を読み込み中…", loadingProgress: "{loaded}/{total}", mapLoadingSpots: "桜スポット予想を読み込み中…", day: "日", days: "日", citiesUnit: "都市", spotsUnit: "スポット",
+      spotTags: { park: "公園", castle: "城", river: "川沿い", garden: "庭園", temple: "寺社", lake: "湖畔" },
+      spotTiming: { peak: "いま見頃", upcoming: "これから", falling: "散り始め / 終了" },
+      spotSourceFilter: { loaded: "読み込みランキング", seeded: "内蔵スポット", popular: "人気名所のみ" },
+      spotDerived: "{city}予想をもとに調整", featuredRanked: "人気名所", prefecture: "都道府県", localArea: "市町村・エリア", rank: "順位", loadedSource: "N-kishouランキング", seededSource: "厳選スポット", spotLiveSource: "N-kishouスポット詳細", cityLiveForecast: "都市の最新予想", fallbackCityForecast: "内蔵の都市予想", spotExactForecast: "スポット個別予想", spotCityForecast: "{city}の都市予想を使用", spotCityFallback: "{city}の予備予想を使用", spotForecastUnavailable: "スポット予想は未公開"
+    }
+  };
+
+  function detectLanguage() {
+    var lang = String(navigator.language || "en").toLowerCase();
+    if (lang.indexOf("zh") === 0) return "zh-Hant";
+    if (lang.indexOf("ja") === 0) return "ja";
+    return "en";
+  }
+
+  function getLocale() {
+    return currentLang === "ja" ? "ja-JP" : (currentLang === "zh-Hant" ? "zh-TW" : "en-US");
+  }
+
+  function tr(path) {
+    var parts = path.split(".");
+    var node = I18N[currentLang] || I18N.en;
+    var fallback = I18N.en;
+    for (var i = 0; i < parts.length; i++) {
+      node = node && node[parts[i]];
+      fallback = fallback && fallback[parts[i]];
+    }
+    return node != null ? node : fallback;
+  }
+
+  function tmpl(value, params) {
+    return String(value).replace(/\{(\w+)\}/g, function(_, key) {
+      return params[key] != null ? params[key] : "";
+    });
+  }
+
+  function getPluralDayLabel(days) {
+    if (currentLang === "en") return days === 1 ? tr("day") : tr("days");
+    return tr("days");
+  }
+
+  function getRegionDisplay(regionKey) {
+    if (regionKey === "All") return tr("allRegions");
+    if (currentLang === "en") return regionKey;
+    return currentLang === "ja" ? REGION_META[regionKey].ja : REGION_META[regionKey].zh;
+  }
+
+  function getCityPrimaryName(city) {
+    return currentLang === "en" ? city.name : city.ja;
+  }
+
+  function getCitySecondaryName(city) {
+    return currentLang === "en" ? city.ja : city.name;
+  }
+
+  function getSpotTagLabel(tag) {
+    return tr("spotTags." + tag) || tag;
+  }
+
+  function getSpotTimingLabel(timing) {
+    return tr("spotTiming." + timing) || timing;
+  }
+
+  function getSpotTimingBucket(spot) {
+    var status = getStatus(spot);
+    if (status === "pending") return "pending";
+    if (status === "blooming" || status === "full_bloom") return "peak";
+    if (status === "not_yet" || status === "budding") return "upcoming";
+    return "falling";
+  }
+
+  function getSpotSourceFilterLabel(sourceKey) {
+    return tr("spotSourceFilter." + sourceKey) || sourceKey;
+  }
+
+  function getSpotSourceDisplay(spot) {
+    if (spot.sourceType === "live-spot") return tr("spotLiveSource");
+    if (spot.rank) {
+      return tr("loadedSource") + " #" + spot.rank;
+    }
+    return tr("seededSource");
+  }
+
+  function hasForecastDates(item) {
+    return !!(item && (item.bloom || item.full));
+  }
+
+  function hasValidCoordinates(item) {
+    return !!(item && typeof item.lat === "number" && !Number.isNaN(item.lat) && typeof item.lng === "number" && !Number.isNaN(item.lng));
+  }
+
+  function getForecastBasisLabel(item) {
+    if (!item) return tr("forecastUnavailable");
+    if (item.type === "city") {
+      if (item.forecastSourceType === "city-live") return tr("cityLiveForecast");
+      if (item.forecastSourceType === "city-fallback") return tr("fallbackCityForecast");
+      return tr("forecastUnavailable");
+    }
+    if (item.forecastSourceType === "spot-live") return tr("spotExactForecast");
+    if (item.forecastSourceType === "city-live") return tmpl(tr("spotCityForecast"), { city: currentLang === "en" ? item.cityName : item.cityJa });
+    if (item.forecastSourceType === "city-fallback") return tmpl(tr("spotCityFallback"), { city: currentLang === "en" ? item.cityName : item.cityJa });
+    return tr("spotForecastUnavailable");
+  }
+
+  function getForecastDateText(item) {
+    return item && item.hasForecastDates
+      ? (fmtDate(item.bloom) + " → " + fmtDate(item.full))
+      : tr("forecastUnavailable");
+  }
+
+  function formatForecastDate(date) {
+    return (date.getMonth() + 1) + "/" + date.getDate();
+  }
+
+  function shiftForecastDate(value, offsetDays) {
+    var date = parseMonthDay(value);
+    if (!date) return "";
+    return formatForecastDate(new Date(date.getTime() + (offsetDays * DAY_MS)));
+  }
+
+  function canDisplaySpotDates(spot) {
+    return !!(spot && spot.hasForecastDates && (spot.bloom || spot.full));
+  }
+
+  function getItemPrimaryName(item) {
+    return currentLang === "en" ? item.name : item.ja;
+  }
+
+  function getItemSecondaryName(item) {
+    return currentLang === "en" ? item.ja : item.name;
+  }
+
+  function getSpotAreaHint(name) {
+    var match = String(name || "").match(/[\(（]([^()（）]+)[\)）]/);
+    return match ? match[1].trim() : "";
+  }
+
+  function getSpotAreaDisplay(spot) {
+    if (currentLang === "en") return spot.localArea || spot.localAreaJa || "";
+    return spot.localAreaJa || spot.localArea || "";
+  }
+
+  function getSpotIdentity(cityName, name) {
+    return cityName + "|" + String(name || "").toLowerCase().replace(/\s+/g, " ").trim();
+  }
+
+  function inferSpotTag(name) {
+    var text = String(name || "");
+    if (/川|堤|緑道|並木|プロムナード/.test(text)) return "river";
+    if (/湖|池/.test(text)) return "lake";
+    if (/寺|神社|神宮|宮$|院/.test(text)) return "temple";
+    if (/城/.test(text)) return "castle";
+    if (/庭園|御苑|園$/.test(text)) return "garden";
+    return "park";
+  }
+
+  function buildGeneratedSpotOffset(index, rank) {
+    var angle = ((rank || (index + 1)) * 41) % 360;
+    var radius = 0.04 + (((index % 4) + 1) * 0.018);
+    return {
+      latOffset: Math.sin(angle * Math.PI / 180) * radius,
+      lngOffset: Math.cos(angle * Math.PI / 180) * radius
+    };
+  }
+
+  function buildSeedSpotRecord(city, parts, index) {
+    var alias = SPOT_NAME_ALIASES[parts[2]] || SPOT_NAME_ALIASES[parts[1]] || null;
+    return inheritCityForecast({
+      id: city.name + "::seed::" + index,
+      type: "spot",
+      name: parts[1],
+      ja: parts[2],
+      reg: city.reg,
+      regJa: city.regJa,
+      cityName: city.name,
+      cityJa: city.ja,
+      prefecture: "",
+      localArea: alias && alias.areaEn ? alias.areaEn : "",
+      localAreaJa: alias && alias.areaJa ? alias.areaJa : "",
+      lat: city.lat + parseFloat(parts[7]),
+      lng: city.lng + parseFloat(parts[8]),
+      hasExactCoords: true,
+      bloom: "",
+      full: "",
+      hasLiveDates: false,
+      hasForecastDates: false,
+      temp: city.temp,
+      tip: city.tip,
+      featured: parts[4] === "1",
+      tag: parts[3],
+      spot: parts[1],
+      mapsQuery: parts[2] + " " + city.ja,
+      order: index,
+      rank: null,
+      sourceType: "seeded",
+      source: tr("forecastPending")
+    }, city);
+  }
+
+  function buildLoadedSpotRecord(city, row, index) {
+    var alias = SPOT_NAME_ALIASES[row.name] || null;
+    var areaJa = alias && alias.areaJa ? alias.areaJa : getSpotAreaHint(row.name);
+    var area = alias && alias.areaEn ? alias.areaEn : areaJa;
+    return inheritCityForecast({
+      id: city.name + "::live::" + row.code,
+      type: "spot",
+      name: alias ? alias.en : row.name,
+      ja: alias ? alias.ja : row.name,
+      reg: city.reg,
+      regJa: city.regJa,
+      cityName: city.name,
+      cityJa: city.ja,
+      prefecture: row.prefecture,
+      localArea: row.localArea || area,
+      localAreaJa: row.localAreaJa || areaJa,
+      lat: row.lat != null ? row.lat : null,
+      lng: row.lng != null ? row.lng : null,
+      hasExactCoords: row.lat != null && row.lng != null,
+      bloom: "",
+      full: "",
+      hasLiveDates: false,
+      hasForecastDates: false,
+      temp: city.temp,
+      tip: row.description || city.tip,
+      featured: true,
+      tag: inferSpotTag(alias ? alias.ja : row.name),
+      spot: alias ? alias.en : row.name,
+      mapsQuery: row.name + " " + row.prefecture,
+      order: 1000 + index,
+      rank: row.rank,
+      sourceType: "loaded",
+      source: tr("loadedSource") + " #" + row.rank
+    }, city);
+  }
+
+  function normalizeNkishouStatus(label) {
+    var text = String(label || "");
+    if (/満開率|もうすぐ満開/.test(text)) return "full_bloom";
+    if (/五分咲|三分咲/.test(text)) return "blooming";
+    if (/開花する頃|開花まであと少し/.test(text)) return "budding";
+    if (/つぼみ|花芽/.test(text)) return "not_yet";
+    return "not_yet";
+  }
+
+  function buildLiveSpotRecord(city, row, index) {
+    var alias = SPOT_NAME_ALIASES[row.name] || null;
+    return inheritCityForecast({
+      id: city.name + "::nkishou::" + row.code,
+      type: "spot",
+      name: alias ? alias.en : row.name,
+      ja: alias ? alias.ja : row.name,
+      reg: city.reg,
+      regJa: city.regJa,
+      cityName: city.name,
+      cityJa: city.ja,
+      prefecture: row.prefecture,
+      localArea: row.localArea || (alias && alias.areaEn ? alias.areaEn : ""),
+      localAreaJa: row.localAreaJa || (alias && alias.areaJa ? alias.areaJa : ""),
+      lat: row.lat != null ? row.lat : null,
+      lng: row.lng != null ? row.lng : null,
+      hasExactCoords: row.lat != null && row.lng != null,
+      bloom: normalizeForecastDate(row.bloom),
+      full: normalizeForecastDate(row.full),
+      hasLiveDates: !!(row.bloom || row.full),
+      hasForecastDates: !!(row.bloom || row.full),
+      temp: city.temp,
+      tip: row.description || city.tip,
+      featured: true,
+      tag: inferSpotTag(alias ? alias.ja : row.name),
+      spot: alias ? alias.en : row.name,
+      mapsQuery: row.name + " " + row.prefecture,
+      order: 500 + index,
+      rank: row.rank || null,
+      sourceType: "live-spot",
+      source: "N-kishou live spot forecast",
+      code: row.code,
+      growthLabel: row.growthLabel,
+      liveStatus: normalizeNkishouStatus(row.growthLabel)
+    }, city);
+  }
+
+  function inheritCityForecast(spot, city) {
+    var cityForecastType = city && city.hasForecastDates
+      ? (city.forecastSourceType === "city-live" ? "city-live" : "city-fallback")
+      : "none";
+    if (!hasForecastDates(spot) && cityForecastType !== "none") {
+      spot.bloom = city.bloom;
+      spot.full = city.full;
+    }
+    spot.hasForecastDates = hasForecastDates(spot);
+    if (spot.hasLiveDates) spot.forecastSourceType = "spot-live";
+    else if (spot.hasForecastDates) spot.forecastSourceType = cityForecastType;
+    else spot.forecastSourceType = "none";
+    return spot;
+  }
+
+  function buildSpotRecords(cityList) {
+    var cityByName = {};
+    cityList.forEach(function(city) {
+      cityByName[city.name] = city;
+    });
+    var merged = {};
+
+    SPOT_ROWS.map(function(row, index) {
+      var parts = row.split("|");
+      var city = cityByName[parts[0]];
+      if (!city) return null;
+      return buildSeedSpotRecord(city, parts, index);
+    }).filter(Boolean).forEach(function(spot) {
+      merged[getSpotIdentity(spot.cityName, spot.name)] = spot;
+    });
+
+    liveSpotRows.map(function(row, index) {
+      var city = cityByName[PREFECTURE_CITY_MAP[row.prefecture] || ""];
+      if (!city) return null;
+      return buildLiveSpotRecord(city, row, index);
+    }).filter(Boolean).forEach(function(spot) {
+      merged[getSpotIdentity(spot.cityName, spot.name)] = spot;
+    });
+
+    rankedSpotRows.map(function(row, index) {
+      var city = cityByName[PREFECTURE_CITY_MAP[row.prefecture] || ""];
+      if (!city) return null;
+      return buildLoadedSpotRecord(city, row, index);
+    }).filter(Boolean).forEach(function(spot) {
+      var key = getSpotIdentity(spot.cityName, spot.name);
+      if (!merged[key]) {
+        merged[key] = spot;
+        return;
+      }
+      merged[key].featured = true;
+      merged[key].rank = merged[key].rank == null ? spot.rank : Math.min(merged[key].rank, spot.rank);
+      merged[key].prefecture = merged[key].prefecture || spot.prefecture;
+      merged[key].localArea = merged[key].localArea || spot.localArea;
+      merged[key].localAreaJa = merged[key].localAreaJa || spot.localAreaJa;
+      if (merged[key].sourceType !== "live-spot") {
+        merged[key].sourceType = "loaded";
+        merged[key].source = tr("loadedSource") + " #" + merged[key].rank;
+      }
+    });
+
+    return Object.keys(merged).map(function(key) {
+      return merged[key];
+    }).sort(function(a, b) {
+      if ((a.rank != null) !== (b.rank != null)) return a.rank != null ? -1 : 1;
+      if (a.rank != null && b.rank != null && a.rank !== b.rank) return a.rank - b.rank;
+      if (a.featured !== b.featured) return a.featured ? -1 : 1;
+      return a.order - b.order;
+    });
+  }
+
+  function getCitySpots(cityName) {
+    return spotsByCityName[cityName] ? spotsByCityName[cityName].slice() : [];
+  }
+
+  function getFilteredSpots() {
+    var cacheKey = [
+      derivedStateVersion,
+      currentDate.getTime(),
+      currentLang,
+      activeRegion,
+      activeSpotTag,
+      activeSpotTiming,
+      activeSpotSource,
+      searchTerm.toLowerCase()
+    ].join("|");
+    if (cacheKey === filteredSpotsCacheKey) return filteredSpotsCacheValue;
+
+    var term = searchTerm.toLowerCase();
+    filteredSpotsCacheKey = cacheKey;
+    filteredSpotsCacheValue = spots.filter(function(spot) {
+      var regionMatch = activeRegion === "All" || spot.reg === activeRegion;
+      var tagMatch = activeSpotTag === "all" || spot.tag === activeSpotTag;
+      var timingMatch = activeSpotTiming === "all" || getSpotTimingBucket(spot) === activeSpotTiming;
+      var sourceMatch = activeSpotSource === "all" ||
+        (activeSpotSource === "loaded" && spot.sourceType === "loaded") ||
+        (activeSpotSource === "seeded" && spot.sourceType === "seeded") ||
+        (activeSpotSource === "popular" && spot.featured);
+      var searchMatch = !term ||
+        spot.name.toLowerCase().indexOf(term) !== -1 ||
+        spot.ja.indexOf(term) !== -1 ||
+        spot.cityName.toLowerCase().indexOf(term) !== -1 ||
+        spot.cityJa.indexOf(term) !== -1 ||
+        String(spot.prefecture || "").indexOf(term) !== -1 ||
+        String(spot.localArea || "").toLowerCase().indexOf(term) !== -1 ||
+        String(spot.localAreaJa || "").indexOf(term) !== -1 ||
+        getRegionDisplay(spot.reg).toLowerCase().indexOf(term) !== -1 ||
+        getSpotTagLabel(spot.tag).toLowerCase().indexOf(term) !== -1;
+      return regionMatch && tagMatch && timingMatch && sourceMatch && searchMatch;
+    });
+    return filteredSpotsCacheValue;
+  }
+
+  function getSpotGuideUrl() {
+    if (currentLang === "ja") return OFFICIAL_SAKURA_JA_URL;
+    if (currentLang === "zh-Hant") return OFFICIAL_SAKURA_ZH_URL;
+    return OFFICIAL_SAKURA_EN_URL;
+  }
+
+  function buildMapsUrl(city) {
+    return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(city.mapsQuery || (city.spot + " " + city.name + " Japan"));
+  }
+
+  function buildSpotLinks(city) {
+    return '<div class="popup-links">' +
+      '<a href="' + getSpotGuideUrl() + '" target="_blank" rel="noopener">' + escapeHtml(tr("officialGuide")) + '</a>' +
+      '<a href="' + buildMapsUrl(city) + '" target="_blank" rel="noopener">' + escapeHtml(tr("mapsLink")) + '</a>' +
+      '<a href="' + OFFICIAL_SAKURA_JA_URL + '" target="_blank" rel="noopener">' + escapeHtml(tr("allSpots")) + '</a>' +
+    '</div>';
+  }
+
+  function updateStaticTranslations() {
+    document.documentElement.lang = currentLang;
+    var appTitle = document.getElementById("appTitle");
+    if (appTitle) appTitle.innerHTML = tr("appTitle");
+    var legendToggle = document.getElementById("legendToggle");
+    if (legendToggle) legendToggle.innerHTML = '<i class="fa-solid fa-circle-info"></i> ' + escapeHtml(tr("legendButton"));
+    var legendTitle = document.getElementById("legendTitle");
+    if (legendTitle) legendTitle.textContent = tr("legendTitle");
+    var searchInput = document.getElementById("searchInput");
+    if (searchInput) searchInput.placeholder = tr("searchPlaceholder");
+    document.querySelectorAll(".view-btn").forEach(function(button) {
+      button.textContent = button.dataset.view === "spots" ? tr("spotsView") : tr("citiesView");
+      button.classList.toggle("active", button.dataset.view === listMode);
+    });
+    document.querySelectorAll("[data-legend]").forEach(function(node) {
+      node.textContent = tr("statuses." + node.dataset.legend);
+    });
+    document.querySelectorAll(".lang-btn").forEach(function(button) {
+      button.classList.toggle("active", button.dataset.lang === currentLang);
+    });
+  }
+
+  function renderSpotFilters() {
+    var container = document.getElementById("spotFilters");
+    if (!container) return;
+    container.classList.toggle("hidden", listMode !== "spots");
+    if (listMode !== "spots") {
+      container.innerHTML = "";
+      return;
+    }
+    if (!spots.length) {
+      container.innerHTML = "";
+      return;
+    }
+
+    container.innerHTML = '<div class="spot-filter-group">' +
+      '<div class="spot-filter-label">' + escapeHtml(tr("filterType")) + '</div>' +
+      '<div class="spot-filter-row">' +
+        SPOT_TAG_ORDER.map(function(tag) {
+          var label = tag === "all" ? tr("filterAllTypes") : getSpotTagLabel(tag);
+          return '<button class="spot-filter-pill' + (activeSpotTag === tag ? ' active' : '') + '" data-filter-kind="tag" data-filter-value="' + escapeHtml(tag) + '">' + escapeHtml(label) + '</button>';
+        }).join("") +
+      '</div>' +
+    '</div>' +
+    '<div class="spot-filter-group">' +
+      '<div class="spot-filter-label">' + escapeHtml(tr("filterTiming")) + '</div>' +
+      '<div class="spot-filter-row">' +
+        SPOT_TIMING_ORDER.map(function(timing) {
+          var label = timing === "all" ? tr("filterAllTiming") : getSpotTimingLabel(timing);
+          return '<button class="spot-filter-pill' + (activeSpotTiming === timing ? ' active' : '') + '" data-filter-kind="timing" data-filter-value="' + escapeHtml(timing) + '">' + escapeHtml(label) + '</button>';
+        }).join("") +
+      '</div>' +
+    '</div>' +
+    '<div class="spot-filter-group">' +
+      '<div class="spot-filter-label">' + escapeHtml(tr("filterSource")) + '</div>' +
+      '<div class="spot-filter-row">' +
+        SPOT_SOURCE_ORDER.map(function(sourceKey) {
+          var label = sourceKey === "all" ? tr("filterAllSources") : getSpotSourceFilterLabel(sourceKey);
+          return '<button class="spot-filter-pill' + (activeSpotSource === sourceKey ? ' active' : '') + '" data-filter-kind="source" data-filter-value="' + escapeHtml(sourceKey) + '">' + escapeHtml(label) + '</button>';
+        }).join("") +
+      '</div>' +
+    '</div>';
+
+    container.querySelectorAll(".spot-filter-pill").forEach(function(button) {
+      button.addEventListener("click", function() {
+        if (button.dataset.filterKind === "tag") {
+          activeSpotTag = button.dataset.filterValue;
+        } else if (button.dataset.filterKind === "source") {
+          activeSpotSource = button.dataset.filterValue;
+        } else {
+          activeSpotTiming = button.dataset.filterValue;
+        }
+        invalidateDerivedState();
+        scheduleRender({ spotFilters: true, cityList: true, statBar: true, markers: true, mapInfo: true, fit: true });
+      });
+    });
+  }
+
+  function makeFixedDate(year, month, day) {
+    return new Date(year, month - 1, day, 12, 0, 0, 0);
+  }
+
+  function cloneDate(date) {
+    return new Date(date.getTime());
+  }
+
+  function clampDate(date) {
+    var normalized = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0, 0);
+    if (normalized < SLIDER_START) return cloneDate(SLIDER_START);
+    if (normalized > SLIDER_END) return cloneDate(SLIDER_END);
+    return normalized;
+  }
+
+  function sliderOffsetToDate(offset) {
+    return new Date(SLIDER_START.getTime() + (offset * DAY_MS));
+  }
+
+  function dateToSliderOffset(date) {
+    return Math.round((clampDate(date).getTime() - SLIDER_START.getTime()) / DAY_MS);
+  }
+
+  function parseMonthDay(value) {
+    var match = String(value || "").trim().match(/^(\d{1,2})\/(\d{1,2})$/);
+    if (!match) return null;
+    return makeFixedDate(SEASON_YEAR, parseInt(match[1], 10), parseInt(match[2], 10));
+  }
+
+  function normalizeForecastDate(value) {
+    var text = String(value || "").trim();
+    return text && text !== "---" ? text : "";
+  }
+
+  function forecastSortValue(value) {
+    var match = String(value || "").match(/^(\d{1,2})\/(\d{1,2})$/);
+    if (!match) return 999999;
+    return (parseInt(match[1], 10) * 100) + parseInt(match[2], 10);
+  }
+
+  function daysBetween(fromDate, toDate) {
+    return Math.round((toDate.getTime() - fromDate.getTime()) / DAY_MS);
+  }
+
+  function pluralizeDays(days) {
+    return days === 1 ? "day" : "days";
+  }
+
+  function formatDisplayDate(date) {
+    return date.toLocaleDateString(getLocale(), { month: "long", day: "numeric" });
+  }
+
+  function fmtDate(value) {
+    return value || "—";
+  }
+
+  function buildFallbackCities() {
+    return CITY_ROWS.map(function(row, index) {
+      var parts = row.split("|");
+      return {
+        type: "city",
+        name: parts[0],
+        ja: parts[1],
+        reg: parts[2],
+        regJa: REGION_META[parts[2]].ja,
+        lat: parseFloat(parts[3]),
+        lng: parseFloat(parts[4]),
+        spot: parts[5],
+        mapsQuery: parts[5] + " " + parts[0] + " Japan",
+        temp: parts[6],
+        bloom: normalizeForecastDate(parts[7]),
+        full: normalizeForecastDate(parts[8]),
+        hasLiveDates: false,
+        liveSources: [],
+        tip: REGION_META[parts[2]].tip,
+        order: index
+      };
+    });
+  }
+
+  function buildCity(baseCity, liveRow) {
+    var liveBloom = liveRow ? normalizeForecastDate(liveRow.bloom) : "";
+    var liveFull = liveRow ? normalizeForecastDate(liveRow.full) : "";
+    var liveSources = liveRow && liveRow.sources ? liveRow.sources.slice() : [];
+    var hasLiveDates = !!(liveBloom || liveFull);
+    var fallbackBloom = normalizeForecastDate(baseCity.bloom);
+    var fallbackFull = normalizeForecastDate(baseCity.full);
+    var bloom = liveBloom || fallbackBloom || "";
+    var full = liveFull || fallbackFull || "";
+    var hasForecastDates = !!(bloom || full);
+    return {
+      type: "city",
+      name: baseCity.name,
+      ja: baseCity.ja,
+      reg: baseCity.reg,
+      regJa: baseCity.regJa,
+      lat: baseCity.lat,
+      lng: baseCity.lng,
+      bloom: bloom,
+      full: full,
+      hasLiveDates: hasLiveDates,
+      hasForecastDates: hasForecastDates,
+      forecastSourceType: hasLiveDates ? "city-live" : (hasForecastDates ? "city-fallback" : "none"),
+      liveSources: liveSources,
+      spot: baseCity.spot,
+      mapsQuery: baseCity.mapsQuery,
+      temp: baseCity.temp,
+      tip: baseCity.tip,
+      order: baseCity.order,
+      source: hasLiveDates
+        ? (liveSources.length > 1 ? "WeatherMap + N-kishou live forecast" : (liveSources[0] === "nkishou" ? "N-kishou live forecast" : "WeatherMap live forecast"))
+        : (hasForecastDates ? tr("fallbackCityForecast") : tr("forecastUnavailable"))
+    };
+  }
+
+  function rebuildSpots() {
+    spots = buildSpotRecords(cities);
+    spotsByCityName = buildSpotIndex(spots);
+    invalidateDerivedState();
+  }
+
+  function setCities(nextCities) {
+    cities = nextCities.slice();
+    rebuildSpots();
+    invalidateDerivedState();
+    regions = ["All"].concat(REGION_ORDER.filter(function(region) {
+      return cities.some(function(city) { return city.reg === region; });
+    }));
+  }
+
+  function getForecastWindow(city) {
+    var bloomDate = parseMonthDay(city.bloom);
+    var fullDate = parseMonthDay(city.full);
+    if (!bloomDate && fullDate) bloomDate = new Date(fullDate.getTime() - (6 * DAY_MS));
+    if (bloomDate && !fullDate) fullDate = new Date(bloomDate.getTime() + (6 * DAY_MS));
+    return {
+      bloom: bloomDate,
+      full: fullDate,
+      start: bloomDate ? new Date(bloomDate.getTime() - (10 * DAY_MS)) : null,
+      end: fullDate ? new Date(fullDate.getTime() + (9 * DAY_MS)) : null
+    };
+  }
+
+  function getStatus(city) {
+    var window = getForecastWindow(city);
+    if (!window.bloom) return "pending";
+    if (currentDate < window.start) return "not_yet";
+    if (currentDate < window.bloom) return "budding";
+    if (currentDate < window.full) return "blooming";
+    if (currentDate <= new Date(window.full.getTime() + (2 * DAY_MS))) return "full_bloom";
+    if (currentDate <= window.end) return "falling";
+    return "ended";
+  }
+
+  function getProgress(city) {
+    var window = getForecastWindow(city);
+    if (!window.start || !window.end) return 0;
+    var total = window.end.getTime() - window.start.getTime();
+    if (total <= 0) return 0;
+    var elapsed = currentDate.getTime() - window.start.getTime();
+    var ratio = Math.max(0, Math.min(1, elapsed / total));
+    return Math.round(ratio * 100);
+  }
+
+  function getCountdownShort(city) {
+    var window = getForecastWindow(city);
+    if (!window.bloom) return tr("forecastPending");
+
+    if (currentDate < window.bloom) {
+      var bloomDiff = daysBetween(currentDate, window.bloom);
+      return bloomDiff === 0 ? tr("expectedToday") : tmpl(tr("bloomIn"), { days: bloomDiff, unit: getPluralDayLabel(bloomDiff) });
+    }
+    if (currentDate < window.full) {
+      var fullDiff = daysBetween(currentDate, window.full);
+      return fullDiff === 0 ? tr("peakToday") : tmpl(tr("fullIn"), { days: fullDiff, unit: getPluralDayLabel(fullDiff) });
+    }
+    if (currentDate <= new Date(window.full.getTime() + (2 * DAY_MS))) return tr("peakNow");
+    if (currentDate <= window.end) return tr("petalsFalling");
+    return tr("bloomOver");
+  }
+
+  function getCountdown(city) {
+    var window = getForecastWindow(city);
+    if (!window.bloom) return tr("noBloomDate");
+
+    if (currentDate < window.bloom) {
+      var bloomDiff = daysBetween(currentDate, window.bloom);
+      return bloomDiff === 0 ? tr("firstBloomToday") : tmpl(tr("firstBloomIn"), { days: bloomDiff, unit: getPluralDayLabel(bloomDiff) });
+    }
+    if (currentDate < window.full) {
+      var fullDiff = daysBetween(currentDate, window.full);
+      return fullDiff === 0 ? tr("fullBloomToday") : tmpl(tr("fullBloomIn"), { days: fullDiff, unit: getPluralDayLabel(fullDiff) });
+    }
+    if (currentDate <= new Date(window.full.getTime() + (2 * DAY_MS))) return tr("bestWindow");
+    if (currentDate <= window.end) return tr("visitSoon");
+    return tr("seasonDone");
+  }
+
+  function getColor(statusKey) {
+    var prop = statusMeta[statusKey].color;
+    return getComputedStyle(document.documentElement).getPropertyValue(prop).trim();
+  }
+
+  function getFilteredCities() {
+    var cacheKey = [
+      derivedStateVersion,
+      currentLang,
+      activeRegion,
+      searchTerm.toLowerCase()
+    ].join("|");
+    if (cacheKey === filteredCitiesCacheKey) return filteredCitiesCacheValue;
+
+    var term = searchTerm.toLowerCase();
+    filteredCitiesCacheKey = cacheKey;
+    filteredCitiesCacheValue = cities.filter(function(city) {
+      var regionMatch = activeRegion === "All" || city.reg === activeRegion;
+      var searchMatch = !term ||
+        city.name.toLowerCase().indexOf(term) !== -1 ||
+        city.ja.indexOf(term) !== -1 ||
+        city.reg.toLowerCase().indexOf(term) !== -1 ||
+        city.regJa.indexOf(term) !== -1 ||
+        getRegionDisplay(city.reg).toLowerCase().indexOf(term) !== -1 ||
+        city.spot.toLowerCase().indexOf(term) !== -1;
+      return regionMatch && searchMatch;
+    });
+    return filteredCitiesCacheValue;
+  }
+
+  function normalizeLine(line) {
+    return String(line || "")
+      .replace(/\u00a0/g, " ")
+      .replace(/(\d{1,2}\/\d{1,2})(---)/g, "$1 $2")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function extractDates(text) {
+    return normalizeLine(text).match(/\d{1,2}\/\d{1,2}|---/g) || [];
+  }
+
+  function parseKnownCityLine(line, nextLine) {
+    for (var i = 0; i < KNOWN_CITY_NAMES.length; i++) {
+      var name = KNOWN_CITY_NAMES[i];
+      if (line === name) {
+        var nextDates = extractDates(nextLine);
+        if (nextDates.length >= 2) {
+          return { name: name, bloom: nextDates[0], full: nextDates[1], consumedNext: true };
+        }
+      }
+      if (line.indexOf(name + " ") === 0) {
+        var tail = line.slice(name.length + 1);
+        var dates = extractDates(tail);
+        if (dates.length >= 2) {
+          return { name: name, bloom: dates[0], full: dates[1], consumedNext: false };
+        }
+        if (dates.length === 1) {
+          var fallbackDates = extractDates(nextLine);
+          if (fallbackDates.length >= 1) {
+            return { name: name, bloom: dates[0], full: fallbackDates[0], consumedNext: true };
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  async function fetchText(url, options) {
+    var cacheKey = options && options.cacheKey ? options.cacheKey : url;
+    var maxAgeMs = options && options.maxAgeMs ? options.maxAgeMs : 0;
+    var cachedText = readCachedText(cacheKey, maxAgeMs);
+    if (cachedText) return cachedText;
+
+    var controller = new AbortController();
+    var externalSignal = createAbortSignal(options);
+    var timeoutId = window.setTimeout(function() {
+      controller.abort(new DOMException("Request timed out", "AbortError"));
+    }, (options && options.timeoutMs) || FETCH_TIMEOUT_MS);
+
+    function abortFromExternal() {
+      controller.abort(externalSignal && externalSignal.reason ? externalSignal.reason : new DOMException("Request aborted", "AbortError"));
+    }
+
+    if (externalSignal) {
+      if (externalSignal.aborted) abortFromExternal();
+      else externalSignal.addEventListener("abort", abortFromExternal, { once: true });
+    }
+
+    try {
+      var response = await fetch(url, { mode: "cors", cache: maxAgeMs ? "default" : "no-store", signal: controller.signal });
+      if (!response.ok) throw new Error("Failed to load live Sakura forecast data.");
+      var text = await response.text();
+      if (maxAgeMs) writeCachedText(cacheKey, text);
+      return text;
+    } finally {
+      window.clearTimeout(timeoutId);
+      if (externalSignal) externalSignal.removeEventListener("abort", abortFromExternal);
+    }
+  }
+
+  function parseWeatherMapText(text) {
+    var rowsByName = {};
+    var lines = String(text || "").split(/\r?\n/);
+
+    function storeRow(row) {
+      var existing = rowsByName[row.name];
+      if (!existing) {
+        rowsByName[row.name] = row;
+        return;
+      }
+      if ((!existing.full && row.full) || (!existing.bloom && row.bloom)) {
+        rowsByName[row.name] = row;
+      }
+    }
+
+    for (var i = 0; i < lines.length; i++) {
+      var line = normalizeLine(lines[i]);
+      if (!line) continue;
+      var parsed = parseKnownCityLine(line, normalizeLine(lines[i + 1] || ""));
+      if (!parsed) continue;
+      storeRow({
+        name: parsed.name,
+        bloom: normalizeForecastDate(parsed.bloom),
+        full: normalizeForecastDate(parsed.full)
+      });
+      if (parsed.consumedNext) i += 1;
+    }
+
+    return Object.keys(rowsByName).map(function(name) {
+      return rowsByName[name];
+    });
+  }
+
+  function parseNKishouCityText(text) {
+    var rowsByName = {};
+    var lines = String(text || "").split(/\r?\n/);
+    var currentCity = "";
+
+    function storeRow(name, bloom, full) {
+      if (!name) return;
+      rowsByName[name] = {
+        name: name,
+        bloom: normalizeForecastDate(bloom),
+        full: normalizeForecastDate(full)
+      };
+    }
+
+    for (var i = 0; i < lines.length; i++) {
+      var line = normalizeLine(lines[i]);
+      if (!line) continue;
+
+      for (var j = 0; j < KNOWN_CITY_NAMES.length; j++) {
+        if (line === KNOWN_CITY_NAMES[j]) {
+          currentCity = KNOWN_CITY_NAMES[j];
+          break;
+        }
+      }
+      if (!currentCity) continue;
+
+      if (line.indexOf("開花") !== -1) {
+        var bloomDates = extractDates(line + " " + normalizeLine(lines[i + 1] || ""));
+        var bloom = bloomDates[0] || "";
+        var full = "";
+        for (var k = i + 1; k < Math.min(lines.length, i + 6); k++) {
+          var candidate = normalizeLine(lines[k]);
+          if (candidate.indexOf("満開") !== -1) {
+            var fullDates = extractDates(candidate + " " + normalizeLine(lines[k + 1] || ""));
+            full = fullDates[0] || "";
+            break;
+          }
+        }
+        if (bloom || full) storeRow(currentCity, bloom, full);
+      }
+    }
+
+    return Object.keys(rowsByName).map(function(name) {
+      return rowsByName[name];
+    });
+  }
+
+  function mergeLiveRows(sourceName, rows, target) {
+    rows.forEach(function(row) {
+      if (!row || !row.name) return;
+      var existing = target[row.name] || { name: row.name, bloom: "", full: "", sources: [] };
+      if (row.bloom) existing.bloom = row.bloom;
+      if (row.full) existing.full = row.full;
+      if (existing.sources.indexOf(sourceName) === -1) existing.sources.push(sourceName);
+      target[row.name] = existing;
+    });
+  }
+
+  function extractSourceUpdate(text) {
+    var lines = String(text || "").split(/\r?\n/);
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i].trim();
+      var match = line.match(/^Updated\s+(.+)$/i);
+      if (match) return match[1].replace(/\s+/g, " ");
+    }
+    return "";
+  }
+
+  function parseRankingText(text, defaultPrefecture) {
+    var collapsed = String(text || "").replace(/\s+/g, " ");
+    var regex = /\[(\d+)位\s*(.+?)(?:\((北海道|東京都|京都府|大阪府|[^()]+県)\))?\]\(http:\/\/s\.n-kishou\.co\.jp\/w\/sp\/sakura\/sakurad\?code=(\d+)\)/g;
+    var seen = {};
+    var rows = [];
+    var match;
+
+    while ((match = regex.exec(collapsed))) {
+      var key = match[4];
+      var prefecture = (match[3] || defaultPrefecture || "").trim();
+      if (!prefecture) continue;
+      if (seen[key]) continue;
+      seen[key] = true;
+      rows.push({
+        rank: parseInt(match[1], 10),
+        name: match[2].trim(),
+        prefecture: prefecture,
+        code: match[4]
+      });
+    }
+
+    return rows;
+  }
+
+  function parseNkishouSpotText(text, prefecture) {
+    var body = String(text || "");
+    var headingRegex = /(?:^|\n)\s*(?:\*\s*)?###\s+([^\n]+)/g;
+    var rows = [];
+    var seen = {};
+    var matches = [];
+    var match;
+
+    while ((match = headingRegex.exec(body))) {
+      matches.push({ index: match.index, name: normalizeLine(match[1]).replace(/^\*\s*/, "").trim() });
+    }
+
+    matches.forEach(function(entry, index) {
+      var nextIndex = index + 1 < matches.length ? matches[index + 1].index : body.length;
+      var sectionStart = Math.max(0, entry.index - 220);
+      var section = body.slice(sectionStart, nextIndex);
+      var growthMatch = section.match(/##\s*\[([^\]]+)\]/);
+      var bloomMatch = section.match(/\|\s*開花(?:予想)?日(?:\s*\(平年\))?\s*\|[\s\S]{0,40}?(---|\d{1,2}\/\d{1,2})/);
+      var fullMatch = section.match(/\|\s*満開予想日(?:\s*\(平年\))?\s*\|[\s\S]{0,40}?(---|\d{1,2}\/\d{1,2})/);
+      var codeMatch = section.match(/sakurad\?code=(\d+)/);
+      var name = entry.name;
+      var code = (codeMatch && codeMatch[1]) || (prefecture + "-" + name);
+      if (!name || seen[code]) return;
+      seen[code] = true;
+      rows.push({
+        prefecture: prefecture,
+        growthLabel: normalizeLine((growthMatch && growthMatch[1]) || ""),
+        name: name,
+        bloom: bloomMatch && bloomMatch[1] !== "---" ? bloomMatch[1] : "",
+        full: fullMatch && fullMatch[1] !== "---" ? fullMatch[1] : "",
+        code: code
+      });
+    });
+
+    return rows;
+  }
+
+  function parseNkishouSpotDetailText(text, code) {
+    var body = String(text || "");
+    if (!body || /今シーズンの情報は入ってきておりません/.test(body)) return null;
+
+    var nameMatch = body.match(/##\s*([^\n]+)\n\n###\s*現在の開花状況/);
+    var areaMatch = body.match(/\n\d+\.\s*\[([^\]]+)\]\(https?:\/\/s\.n-kishou\.co\.jp\/w\/sp\/sakura\/sakurasel[^\)]*\)[\s\S]{0,80}?\n\d+\.\s*([^\n]+)/);
+    var addressMatch = body.match(/\|\s*住所\s*\|\s*([^\n|]+)/);
+    var coordsMatch = body.match(/maps\.google\.co\.jp\/maps\?q=([0-9.\-]+),([0-9.\-]+)/i);
+    var descriptionMatch = body.match(/###\s*現在の開花状況[\s\S]*?UP\s*\n\n([\s\S]*?)\n\n\*/);
+    var areaText = areaMatch ? normalizeLine(areaMatch[1]) : "";
+    var addressText = addressMatch ? normalizeLine(addressMatch[1]) : "";
+    var prefMatch = (areaText || addressText).match(/^(北海道|東京都|京都府|大阪府|[^\s]+県)\s*(.*)$/);
+
+    return {
+      code: code,
+      name: normalizeLine((nameMatch && nameMatch[1]) || (areaMatch && areaMatch[2]) || ""),
+      prefecture: prefMatch ? prefMatch[1] : "",
+      localAreaJa: prefMatch ? prefMatch[2].trim() : "",
+      localArea: prefMatch ? prefMatch[2].trim() : "",
+      description: descriptionMatch ? normalizeLine(descriptionMatch[1]) : "",
+      lat: coordsMatch ? parseFloat(coordsMatch[1]) : null,
+      lng: coordsMatch ? parseFloat(coordsMatch[2]) : null
+    };
+  }
+
+  function enrichSpotRowsWithDetails(rows) {
+    return rows.map(function(row) {
+      var detail = spotDetailCache[row.code];
+      if (!detail) return row;
+      return {
+        rank: row.rank,
+        growthLabel: row.growthLabel,
+        name: detail.name || row.name,
+        prefecture: detail.prefecture || row.prefecture,
+        bloom: row.bloom,
+        full: row.full,
+        code: row.code,
+        localArea: detail.localArea || row.localArea || "",
+        localAreaJa: detail.localAreaJa || row.localAreaJa || "",
+        description: detail.description || row.description || "",
+        lat: detail.lat != null ? detail.lat : row.lat,
+        lng: detail.lng != null ? detail.lng : row.lng
+      };
+    });
+  }
+
+  async function prefetchSpotDetails(codes, options) {
+    var queue = codes.filter(function(code) {
+      return code && !Object.prototype.hasOwnProperty.call(spotDetailCache, code);
+    });
+    var signal = createAbortSignal(options);
+
+    spotDataState.loaded = 0;
+    spotDataState.total = queue.length;
+    updateLoadingStatus();
+
+    if (!queue.length) return;
+    await runThrottledTasks(queue, SPOT_DETAIL_CONCURRENCY, async function(code) {
+      if (signal && signal.aborted) throw signal.reason || new DOMException("Request aborted", "AbortError");
+      try {
+        var text = await fetchText("https://r.jina.ai/http://s.n-kishou.co.jp/w/sp/sakura/sakurad?code=" + encodeURIComponent(code), { signal: signal, cacheKey: "detail:" + code, maxAgeMs: SOURCE_CACHE_TTL_MS });
+        spotDetailCache[code] = parseNkishouSpotDetailText(text, code);
+      } catch (error) {
+        if (isAbortError(error)) throw error;
+        spotDetailCache[code] = null;
+      } finally {
+        spotDataState.loaded += 1;
+        updateLoadingStatus();
+      }
+    });
+  }
+
+  function getRankingDefaultPrefecture(url) {
+    if (String(url).indexOf("ba=hokka") !== -1) return "北海道";
+    return "";
+  }
+
+  async function loadRankingSpots(options) {
+    var signal = createAbortSignal(options);
+    var settled = await runThrottledTasks(SPOT_RANKING_URLS, SPOT_BATCH_CONCURRENCY, function(url) {
+      return fetchText(url, { signal: signal, cacheKey: "rank:" + url, maxAgeMs: SOURCE_CACHE_TTL_MS }).then(function(text) {
+        return { url: url, text: text };
+      });
+    });
+    var merged = {};
+
+    settled.forEach(function(result) {
+      if (result.status !== "fulfilled") return;
+      parseRankingText(result.value.text, getRankingDefaultPrefecture(result.value.url)).forEach(function(row) {
+        if (!PREFECTURE_CITY_MAP[row.prefecture]) return;
+        if (!merged[row.code]) merged[row.code] = row;
+      });
+    });
+
+    rankedSpotRows = Object.keys(merged).map(function(code) {
+      return merged[code];
+    }).sort(function(a, b) {
+      if (a.rank !== b.rank) return a.rank - b.rank;
+      return a.name.localeCompare(b.name, "ja");
+    });
+  }
+
+  async function loadLiveSpotForecasts(options) {
+    var prefectures = Object.keys(NKISHOU_PREFECTURE_CODES);
+    var signal = createAbortSignal(options);
+    var settled = await runThrottledTasks(prefectures, SPOT_BATCH_CONCURRENCY, function(prefecture) {
+      var url = "https://r.jina.ai/http://s.n-kishou.co.jp/w/sp/sakura/sakura_yosou?ba=" + NKISHOU_PREFECTURE_CODES[prefecture];
+      return fetchText(url, { signal: signal, cacheKey: "pref:" + prefecture, maxAgeMs: SOURCE_CACHE_TTL_MS }).then(function(text) {
+        return { prefecture: prefecture, text: text };
+      });
+    });
+    var merged = {};
+
+    settled.forEach(function(result) {
+      if (result.status !== "fulfilled") return;
+      parseNkishouSpotText(result.value.text, result.value.prefecture).forEach(function(row) {
+        if (!PREFECTURE_CITY_MAP[row.prefecture]) return;
+        if (!merged[row.code]) merged[row.code] = row;
+      });
+    });
+
+    liveSpotRows = Object.keys(merged).map(function(code) {
+      return merged[code];
+    });
+  }
+
+  async function ensureSpotDataLoaded() {
+    if (spotDataState.mode === "loaded") return spots;
+    if (spotLoadPromise) return spotLoadPromise;
+
+    var controller = createSpotLoadController();
+
+    spotDataState = { mode: "loading", loaded: 0, total: 0, message: tr("loadingSpots") };
+    scheduleRender({ loadingStatus: true, spotFilters: true, cityList: true, statBar: true, mapInfo: true });
+
+    spotLoadPromise = Promise.all([
+      loadRankingSpots({ signal: controller.signal }),
+      loadLiveSpotForecasts({ signal: controller.signal })
+    ]).then(async function() {
+      rebuildSpots();
+      scheduleRender({ spotFilters: true, cityList: true, statBar: true, markers: true, mapInfo: true, fit: true });
+
+      var uniqueCodes = {};
+      rankedSpotRows.forEach(function(row) { if (row.code) uniqueCodes[row.code] = true; });
+      liveSpotRows.forEach(function(row) { if (row.code) uniqueCodes[row.code] = true; });
+      await prefetchSpotDetails(Object.keys(uniqueCodes), { signal: controller.signal });
+      rankedSpotRows = enrichSpotRowsWithDetails(rankedSpotRows);
+      liveSpotRows = enrichSpotRowsWithDetails(liveSpotRows);
+      spotDataState = { mode: "loaded", loaded: spotDataState.total, total: spotDataState.total, message: "" };
+      rebuildSpots();
+      renderAll();
+      fitVisibleCities();
+      return spots;
+    }).catch(function(error) {
+      if (isAbortError(error)) {
+        spotDataState = { mode: "idle", loaded: 0, total: 0, message: "" };
+        scheduleRender({ loadingStatus: true, spotFilters: true, cityList: true, statBar: true, mapInfo: true });
+        return spots;
+      }
+      spotDataState = { mode: "error", loaded: 0, total: 0, message: error && error.message ? error.message : tr("noSpots") };
+      renderAll();
+      return [];
+    }).finally(function() {
+      if (spotLoadController === controller) spotLoadController = null;
+      spotLoadPromise = null;
+      updateLoadingStatus();
+    });
+
+    return spotLoadPromise;
+  }
+
+  function applyLiveRows(liveRows) {
+    var liveByName = {};
+    liveRows.forEach(function(row) {
+      liveByName[row.name] = row;
+    });
+    setCities(FALLBACK_CITIES.map(function(baseCity) {
+      return buildCity(baseCity, liveByName[baseCity.name] || null);
+    }));
+  }
+
+  async function loadLiveData() {
+    try {
+      var settled = await Promise.allSettled([
+        fetchText(SOURCE_URL, { cacheKey: "city:weathermap", maxAgeMs: SOURCE_CACHE_TTL_MS }),
+        fetchText(NKISHOU_CITY_URL, { cacheKey: "city:nkishou", maxAgeMs: SOURCE_CACHE_TTL_MS })
+      ]);
+      var mergedLive = {};
+      var weatherText = "";
+
+      if (settled[0].status === "fulfilled") {
+        weatherText = settled[0].value;
+        mergeLiveRows("weathermap", parseWeatherMapText(weatherText), mergedLive);
+      }
+      if (settled[1].status === "fulfilled") {
+        mergeLiveRows("nkishou", parseNKishouCityText(settled[1].value), mergedLive);
+      }
+
+      var liveRows = Object.keys(mergedLive).map(function(name) { return mergedLive[name]; });
+      if (!liveRows.length) throw new Error("No live sakura forecast rows were parsed.");
+      applyLiveRows(liveRows);
+      return {
+        mode: "live",
+        updatedText: extractSourceUpdate(weatherText),
+        liveCount: liveRows.length,
+        message: "Live dates loaded from WeatherMap and N-kishou."
+      };
+    } catch (error) {
+      setCities(FALLBACK_CITIES.map(function(city) {
+        return buildCity(city, null);
+      }));
+      return {
+        mode: "fallback",
+        updatedText: "",
+        liveCount: 0,
+        message: error && error.message ? error.message : "Live WeatherMap fetch failed."
+      };
+    }
+  }
+
+  function updateDateDisplay() {
+    document.getElementById("dateLabel").textContent = formatDisplayDate(currentDate);
+    var yearLabel = document.querySelector(".date-year");
+    if (yearLabel) yearLabel.textContent = String(SEASON_YEAR);
+    var slider = document.getElementById("dateSlider");
+    if (slider) slider.value = String(dateToSliderOffset(currentDate));
+  }
+
+  function updateSourceDisplay() {
+    var sourceLabel = document.getElementById("sourceLabel");
+    if (!sourceLabel) return;
+
+    if (sourceState.mode === "loading") {
+      sourceLabel.innerHTML = tr("loadingSource");
+      return;
+    }
+
+    if (sourceState.mode === "live") {
+      sourceLabel.innerHTML = tmpl(tr("liveSource"), {
+        updated: sourceState.updatedText ? tmpl(tr("liveUpdated"), { text: escapeHtml(sourceState.updatedText) }) : ""
+      });
+      return;
+    }
+
+    sourceLabel.innerHTML = tr("fallbackSource");
+  }
+
+  function updateLoadingStatus() {
+    var container = document.getElementById("loadingStatus");
+    var label = document.getElementById("loadingStatusLabel");
+    var value = document.getElementById("loadingStatusValue");
+    var track = document.getElementById("loadingBarTrack");
+    var fill = document.getElementById("loadingBarFill");
+    if (!container || !label || !value || !track || !fill) return;
+
+    if (sourceState.mode === "loading") {
+      container.classList.add("visible");
+      label.textContent = tr("loadingCities");
+      value.textContent = "";
+      track.classList.add("indeterminate");
+      fill.style.width = "38%";
+      return;
+    }
+
+    if (spotDataState.mode === "loading") {
+      container.classList.add("visible");
+      label.textContent = spotDataState.message || tr("loadingSpots");
+      if (spotDataState.total > 0) {
+        value.textContent = tmpl(tr("loadingProgress"), { loaded: spotDataState.loaded, total: spotDataState.total });
+        track.classList.remove("indeterminate");
+        fill.style.width = Math.max(6, Math.round((spotDataState.loaded / spotDataState.total) * 100)) + "%";
+      } else {
+        value.textContent = "";
+        track.classList.add("indeterminate");
+        fill.style.width = "38%";
+      }
+      return;
+    }
+
+    container.classList.remove("visible");
+    value.textContent = "";
+    track.classList.remove("indeterminate");
+    fill.style.width = "0%";
+  }
+
+  function updateMapInfo() {
+    var infoElement = document.getElementById("mapInfo");
+    if (!infoElement) return;
+    infoElement.classList.toggle("is-loading", (sourceState.mode === "loading" && !cities.length) || (listMode === "spots" && spotDataState.mode === "loading" && !spots.length));
+
+    if (sourceState.mode === "loading" && !cities.length) {
+      infoElement.textContent = tr("mapLoading");
+      return;
+    }
+    if (listMode === "spots" && spotDataState.mode === "loading") {
+      if (!spots.length) {
+        infoElement.textContent = tr("mapLoadingSpots");
+        return;
+      }
+    }
+    var visibleItems = listMode === "spots" ? getFilteredSpots() : getFilteredCities();
+    var activeCount = visibleItems.filter(function(item) {
+      var status = getStatus(item);
+      return status === "blooming" || status === "full_bloom";
+    }).length;
+    var unit = listMode === "spots" ? tr("spotsUnit") : tr("citiesUnit");
+    var suffix = sourceState.mode === "live"
+      ? (sourceState.updatedText ? tmpl(tr("suffixLiveUpdated"), { text: sourceState.updatedText }) : tr("suffixLive"))
+      : (sourceState.mode === "fallback" ? tr("suffixFallback") : tr("suffixLoading"));
+    infoElement.textContent = tmpl(tr("mapInfo"), { count: activeCount, unit: unit, date: formatDisplayDate(currentDate), suffix: suffix });
+  }
+
+  function isDarkMode() {
+    return document.documentElement.classList.contains("dark");
+  }
+
+  function isMobileViewport() {
+    return window.innerWidth <= 768;
+  }
+
+  function getPopupOptions() {
+    var horizontalPadding = isMobileViewport() ? 16 : 24;
+    var bottomPadding = isMobileViewport() ? Math.max(150, Math.round(window.innerHeight * 0.34)) : 24;
+    return {
+      closeButton: true,
+      className: "sakura-map-popup",
+      maxWidth: isMobileViewport() ? Math.min(320, Math.max(220, window.innerWidth - 32)) : 330,
+      minWidth: isMobileViewport() ? 0 : 260,
+      autoPan: !isMobileViewport(),
+      keepInView: !isMobileViewport(),
+      autoPanPaddingTopLeft: [horizontalPadding, 16],
+      autoPanPaddingBottomRight: [horizontalPadding, bottomPadding]
+    };
+  }
+
+  function bindPopupTouchLock(marker) {
+    marker.on("popupopen", function(event) {
+      var popupElement = event.popup && event.popup.getElement ? event.popup.getElement() : null;
+      if (!popupElement) return;
+
+      var scrollRegion = popupElement.querySelector(".popup-body") || popupElement;
+      [popupElement, scrollRegion].forEach(function(node) {
+        L.DomEvent.disableClickPropagation(node);
+        L.DomEvent.disableScrollPropagation(node);
+        ["touchstart", "touchmove", "pointerdown", "pointermove", "wheel"].forEach(function(type) {
+          L.DomEvent.on(node, type, L.DomEvent.stopPropagation);
+        });
+      });
+    });
+  }
+
+  function focusMarkerPopup(marker, lat, lng, zoom) {
+    if (!marker) return;
+    if (map) {
+      map.setView([lat, lng], zoom, { animate: true });
+      if (isMobileViewport()) {
+        map.invalidateSize(false);
+      }
+    }
+    window.setTimeout(function() {
+      if (map && isMobileViewport()) {
+        map.invalidateSize(false);
+      }
+      marker.openPopup();
+    }, isMobileViewport() ? 260 : 80);
+  }
+
+  function buildTileLayer(kind) {
+    return L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; CARTO',
+      subdomains: "abcd",
+      maxZoom: 20
+    });
+  }
+
+  function handleTileError(event) {
+    if (event.tile) {
+      event.tile.classList.add("tile-failed");
+      event.tile.alt = "";
+      event.tile.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+    }
+    if (currentBaseLayerKind === "primary" && !tileFallbackApplied) {
+      tileFallbackApplied = true;
+      setBaseTileLayer("fallback");
+      updateMapInfo();
+    }
+  }
+
+  function setBaseTileLayer(kind) {
+    currentBaseLayerKind = kind;
+    if (currentTileLayer) map.removeLayer(currentTileLayer);
+    currentTileLayer = buildTileLayer(kind);
+    currentTileLayer.on("tileerror", handleTileError);
+    currentTileLayer.addTo(map);
+  }
+
+  /* ── Map ── */
+  function initMap() {
+    map = L.map("map", {
+      center: HOME_VIEW,
+      zoom: HOME_ZOOM,
+      zoomControl: true,
+      attributionControl: true
+    });
+    setBaseTileLayer("primary");
+    cityMarkerLayer = L.layerGroup().addTo(map);
+    spotMarkerLayer = L.layerGroup().addTo(map);
+  }
+
+  function buildPinHtml(item, kind) {
+    var status = getStatus(item);
+    var color = getColor(status);
+    var shouldPulse = status === "blooming" || status === "full_bloom";
+    var isActive = kind === "spot" ? selectedSpot === item.id : selectedCity === item.name;
+    return '<div class="map-pin-wrap' + (isActive ? ' active' : '') + '">' +
+      '<div class="map-pin' + (kind === "spot" ? ' spot-pin' : '') + (shouldPulse ? ' pulse' : '') + '" style="background:' + color + ';color:' + color + '">' +
+        '<div class="map-pin-inner"></div>' +
+      '</div>' +
+      '<div class="pin-label">' + escapeHtml(getItemPrimaryName(item)) + '</div>' +
+    '</div>';
+  }
+
+  function getItemSourceLabel(item) {
+    if (item.type === "spot") {
+      var parts = [];
+      if (item.sourceType === "live-spot") {
+        parts.push(tr("spotLiveSource"));
+        if (item.growthLabel) parts.push(item.growthLabel);
+        parts.push(getForecastBasisLabel(item));
+        return parts.join(" · ");
+      }
+      if (item.rank) parts.push(tr("loadedSource") + " #" + item.rank);
+      else parts.push(tr("seededSource"));
+      parts.push(getForecastBasisLabel(item));
+      return parts.join(" · ");
+    }
+    return item.source;
+  }
+
+  function buildSpotPreviewList(cityName) {
+    var citySpots = getCitySpots(cityName).slice(0, 4);
+    if (!citySpots.length) return "";
+    return '<div class="popup-spots">' +
+      '<div class="popup-subtitle">' + escapeHtml(tr("featuredSpots")) + '</div>' +
+      '<div class="popup-spot-list">' +
+        citySpots.map(function(spot) {
+          return '<div class="popup-spot-item">' +
+            '<div class="popup-spot-top">' +
+              '<div>' +
+                '<div class="popup-spot-name">' + escapeHtml(getItemPrimaryName(spot)) + '</div>' +
+                '<div class="popup-spot-sub">' + escapeHtml(getSpotTagLabel(spot.tag)) + (getSpotAreaDisplay(spot) ? ' · ' + escapeHtml(getSpotAreaDisplay(spot)) : '') + (spot.rank ? ' · #' + spot.rank : '') + (spot.prefecture ? ' · ' + escapeHtml(spot.prefecture) : '') + (spot.featured ? ' · ' + escapeHtml(tr("featuredRanked")) : '') + '</div>' +
+              '</div>' +
+              '<span class="status-badge status-' + getStatus(spot) + '">' + escapeHtml(tr("statuses." + getStatus(spot))) + '</span>' +
+            '</div>' +
+            '<div class="popup-spot-forecast">' + escapeHtml(getForecastDateText(spot)) + ' · ' + escapeHtml(getForecastBasisLabel(spot)) + '</div>' +
+          '</div>';
+        }).join("") +
+      '</div>' +
+    '</div>';
+  }
+
+  function buildPopup(item) {
+    var status = getStatus(item);
+    var meta = statusMeta[status];
+    var progress = getProgress(item);
+    var color = getColor(status);
+    var titleSub = item.type === "spot"
+      ? '<dt>' + escapeHtml(tr("parentCity")) + '</dt><dd>' + escapeHtml(currentLang === "en" ? item.cityName : item.cityJa) + '</dd>'
+      : '';
+    var spotSection = item.type === "city" ? buildSpotPreviewList(item.name) : "";
+
+    return '<div class="popup-inner">' +
+      '<div class="popup-top-band">' +
+        '<div class="popup-header">' +
+          '<span class="popup-city">' + escapeHtml(getItemPrimaryName(item)) + '</span>' +
+          '<span class="popup-ja">' + escapeHtml(getItemSecondaryName(item)) + '</span>' +
+        '</div>' +
+        '<div class="popup-region-row">' +
+          '<span class="popup-region"><i class="fa-solid fa-location-dot"></i> ' + escapeHtml(getRegionDisplay(item.reg)) + '</span>' +
+          '<span class="popup-status"><span class="status-badge status-' + status + '">' + meta.icon + ' ' + escapeHtml(tr("statuses." + status)) + '</span></span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="popup-body">' +
+        '<div class="popup-progress-section">' +
+          '<div class="popup-progress-label"><span>' + escapeHtml(tr("bloomCycle")) + '</span><span style="color:' + color + '">' + progress + '%</span></div>' +
+          '<div class="popup-progress-bar"><div class="popup-progress-fill" style="width:' + progress + '%"></div></div>' +
+        '</div>' +
+        '<dl class="popup-info">' +
+          '<dt>' + escapeHtml(tr("firstBloom")) + '</dt><dd>' + escapeHtml(item.hasForecastDates ? fmtDate(item.bloom) : tr("forecastUnavailable")) + '</dd>' +
+          '<dt>' + escapeHtml(tr("fullBloom")) + '</dt><dd>' + escapeHtml(item.hasForecastDates ? fmtDate(item.full) : tr("forecastUnavailable")) + '</dd>' +
+          '<dt>' + escapeHtml(item.type === "spot" ? tr("spotForecast") : tr("bestSpot")) + '</dt><dd>' + escapeHtml(item.spot) + '</dd>' +
+          titleSub +
+          (item.type === "spot" && getSpotAreaDisplay(item) ? '<dt>' + escapeHtml(tr("localArea")) + '</dt><dd>' + escapeHtml(getSpotAreaDisplay(item)) + '</dd>' : '') +
+          '<dt>' + escapeHtml(tr("region")) + '</dt><dd>' + escapeHtml(getRegionDisplay(item.reg)) + '</dd>' +
+          '<dt>' + escapeHtml(tr("weather")) + '</dt><dd>' + escapeHtml(item.temp) + '</dd>' +
+          '<dt>' + escapeHtml(tr("source")) + '</dt><dd>' + escapeHtml(getItemSourceLabel(item)) + '</dd>' +
+        '</dl>' +
+        '<div class="popup-tip"><strong>' + escapeHtml(tr("tip")) + ':</strong> ' + escapeHtml(item.tip) + '</div>' +
+        spotSection +
+        buildSpotLinks(item.type === "spot" ? { spot: item.spot, name: item.cityName, ja: item.cityJa, mapsQuery: item.mapsQuery } : item) +
+        '<div class="popup-countdown">' + escapeHtml(getCountdown(item)) + '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function clearMarkers() {
+    cityMarkerMap = {};
+    spotMarkerMap = {};
+    if (cityMarkerLayer) cityMarkerLayer.clearLayers();
+    if (spotMarkerLayer) spotMarkerLayer.clearLayers();
+  }
+
+  function buildMarkerIcon(item, kind) {
+    return L.divIcon({
+      className: "",
+      html: buildPinHtml(item, kind),
+      iconSize: kind === "spot" ? [16, 23] : [22, 30],
+      iconAnchor: kind === "spot" ? [8, 23] : [11, 30],
+      popupAnchor: kind === "spot" ? [0, -22] : [0, -30]
+    });
+  }
+
+  function buildMarkerTooltip(item, kind) {
+    var meta = statusMeta[getStatus(item)];
+    if (kind === "spot") {
+      return getItemPrimaryName(item) + "  —  " + meta.icon + " " + tr("statuses." + getStatus(item));
+    }
+    return getCityPrimaryName(item) + "  " + getCitySecondaryName(item) + "  —  " + meta.icon + " " + tr("statuses." + getStatus(item));
+  }
+
+  function syncMarkerPresentation(marker, item, kind) {
+    if (!hasValidCoordinates(item)) return;
+    marker.setLatLng([item.lat, item.lng]);
+    marker.setIcon(buildMarkerIcon(item, kind));
+    if (marker.getPopup()) marker.setPopupContent(buildPopup(item));
+    else marker.bindPopup(buildPopup(item), getPopupOptions());
+    if (marker.getTooltip()) marker.setTooltipContent(buildMarkerTooltip(item, kind));
+    else marker.bindTooltip(buildMarkerTooltip(item, kind), {
+      direction: "top",
+      offset: kind === "spot" ? [0, -28] : [0, -34],
+      className: "sakura-tooltip"
+    });
+  }
+
+  function addCityMarker(city) {
+    var icon = buildMarkerIcon(city, "city");
+    var marker = L.marker([city.lat, city.lng], { icon: icon }).addTo(cityMarkerLayer);
+    marker.bindPopup(buildPopup(city), getPopupOptions());
+    marker.bindTooltip(buildMarkerTooltip(city, "city"), {
+      direction: "top",
+      offset: [0, -34],
+      className: "sakura-tooltip"
+    });
+    bindPopupTouchLock(marker);
+    marker.on("click", function() { selectCity(city.name); });
+    cityMarkerMap[city.name] = marker;
+    return marker;
+  }
+
+  function addSpotMarker(spot) {
+    if (!hasValidCoordinates(spot)) return null;
+    var icon = buildMarkerIcon(spot, "spot");
+    var marker = L.marker([spot.lat, spot.lng], { icon: icon }).addTo(spotMarkerLayer);
+    marker.bindPopup(buildPopup(spot), getPopupOptions());
+    marker.bindTooltip(buildMarkerTooltip(spot, "spot"), {
+      direction: "top",
+      offset: [0, -28],
+      className: "sakura-tooltip"
+    });
+    bindPopupTouchLock(marker);
+    marker.on("click", function() { selectSpot(spot.id); });
+    spotMarkerMap[spot.id] = marker;
+    return marker;
+  }
+
+  function syncCityMarkers() {
+    var activeCityKeys = {};
+    cities.forEach(function(city) {
+      activeCityKeys[city.name] = true;
+      var marker = cityMarkerMap[city.name] || addCityMarker(city);
+      syncMarkerPresentation(marker, city, "city");
+      if (!cityMarkerLayer.hasLayer(marker)) cityMarkerLayer.addLayer(marker);
+    });
+    Object.keys(cityMarkerMap).forEach(function(name) {
+      if (activeCityKeys[name]) return;
+      if (cityMarkerLayer.hasLayer(cityMarkerMap[name])) cityMarkerLayer.removeLayer(cityMarkerMap[name]);
+      delete cityMarkerMap[name];
+    });
+  }
+
+  function syncSpotMarkers() {
+    var visibleSpotKeys = {};
+    var activeSpotKeys = {};
+    spots.forEach(function(spot) {
+      activeSpotKeys[spot.id] = true;
+    });
+    getVisibleSpotsForMap().forEach(function(spot) {
+      visibleSpotKeys[spot.id] = true;
+      var marker = spotMarkerMap[spot.id] || addSpotMarker(spot);
+      if (!marker) return;
+      syncMarkerPresentation(marker, spot, "spot");
+      if (!spotMarkerLayer.hasLayer(marker)) spotMarkerLayer.addLayer(marker);
+    });
+    Object.keys(spotMarkerMap).forEach(function(id) {
+      if (!activeSpotKeys[id]) {
+        if (spotMarkerLayer.hasLayer(spotMarkerMap[id])) spotMarkerLayer.removeLayer(spotMarkerMap[id]);
+        delete spotMarkerMap[id];
+        return;
+      }
+      if (!visibleSpotKeys[id] && spotMarkerLayer.hasLayer(spotMarkerMap[id])) {
+        spotMarkerLayer.removeLayer(spotMarkerMap[id]);
+      }
+    });
+  }
+
+  function getVisibleSpotsForMap() {
+    if (listMode === "spots") return getFilteredSpots().filter(hasValidCoordinates);
+    if (selectedCity) return getCitySpots(selectedCity).filter(hasValidCoordinates);
+    return [];
+  }
+
+  function populateMarkers() {
+    if (sourceState.mode === "loading" && !cities.length) {
+      clearMarkers();
+      return;
+    }
+    syncCityMarkers();
+    syncSpotMarkers();
+  }
+
+  function refreshMarkers() {
+    populateMarkers();
+  }
+
+  function fitVisibleCities() {
+    var visibleItems = (listMode === "spots" ? getFilteredSpots() : getFilteredCities()).filter(hasValidCoordinates);
+    if (!visibleItems.length) {
+      map.setView(HOME_VIEW, HOME_ZOOM);
+      return;
+    }
+    var bounds = L.latLngBounds(visibleItems.map(function(item) {
+      return [item.lat, item.lng];
+    }));
+    map.fitBounds(bounds.pad(0.18));
+  }
+
+  /* ── Sidebar ── */
+  function renderRegionFilters() {
+    var container = document.getElementById("regionFilters");
+    container.innerHTML = regions.map(function(region) {
+      return '<button class="region-pill' + (region === activeRegion ? ' active' : '') + '" data-region="' + escapeHtml(region) + '">' + escapeHtml(getRegionDisplay(region)) + '</button>';
+    }).join("");
+    container.querySelectorAll(".region-pill").forEach(function(button) {
+      button.addEventListener("click", function() {
+        activeRegion = button.dataset.region;
+        invalidateDerivedState();
+        scheduleRender({ regions: true, spotFilters: true, cityList: true, statBar: true, markers: true, mapInfo: true, fit: true });
+      });
+    });
+  }
+
+  function buildCityCard(city, index) {
+    var status = getStatus(city);
+    var meta = statusMeta[status];
+    var color = getColor(status);
+    var citySpots = getCitySpots(city.name);
+    var preview = citySpots.slice(0, 3).map(function(spot) {
+      return '<span class="spot-chip">📍 ' + escapeHtml(getItemPrimaryName(spot)) + '</span>';
+    }).join("");
+    return '<div class="city-card' + (selectedCity === city.name && listMode === "cities" ? ' selected' : '') + '" data-city="' + escapeHtml(city.name) + '" style="animation-delay:' + (index * 0.025) + 's">' +
+      '<div class="city-card-top">' +
+        '<div class="city-name-wrap">' +
+          '<span class="card-dot" style="background:' + color + '"></span>' +
+          '<span class="city-name">' + escapeHtml(getCityPrimaryName(city)) + '</span>' +
+          '<span class="city-name-ja">' + escapeHtml(getCitySecondaryName(city)) + '</span>' +
+        '</div>' +
+        '<span class="status-badge status-' + status + '">' + meta.icon + ' ' + escapeHtml(tr("statuses." + status)) + '</span>' +
+      '</div>' +
+      '<div class="city-card-mid">' +
+        '<span>🌸 ' + escapeHtml(getForecastDateText(city)) + '</span>' +
+        '<span class="temp">' + escapeHtml(getRegionDisplay(city.reg)) + '</span>' +
+      '</div>' +
+      '<div class="city-spot">📍 ' + escapeHtml(city.spot) + '</div>' +
+      (preview ? '<div class="city-spots-preview">' + preview + '</div>' : '') +
+      '<div class="city-countdown">' + escapeHtml(getCountdownShort(city)) + '</div>' +
+    '</div>';
+  }
+
+  function buildSpotCard(spot, index) {
+    var status = getStatus(spot);
+    var meta = statusMeta[status];
+    var color = getColor(status);
+    return '<div class="city-card' + (selectedSpot === spot.id ? ' selected' : '') + '" data-spot="' + escapeHtml(spot.id) + '" style="animation-delay:' + (index * 0.02) + 's">' +
+      '<div class="city-card-top">' +
+        '<div class="city-name-wrap">' +
+          '<span class="card-dot" style="background:' + color + '"></span>' +
+          '<span class="city-name">' + escapeHtml(getItemPrimaryName(spot)) + '</span>' +
+          '<span class="city-name-ja">' + escapeHtml(getItemSecondaryName(spot)) + '</span>' +
+        '</div>' +
+        '<span class="status-badge status-' + status + '">' + meta.icon + ' ' + escapeHtml(tr("statuses." + status)) + '</span>' +
+      '</div>' +
+      '<div class="spot-card-parent">' + escapeHtml(tr("parentCity")) + ': ' + escapeHtml(currentLang === "en" ? spot.cityName : spot.cityJa) + ' · ' + escapeHtml(getRegionDisplay(spot.reg)) + (getSpotAreaDisplay(spot) ? ' · ' + escapeHtml(getSpotAreaDisplay(spot)) : '') + '</div>' +
+      '<div class="city-card-mid">' +
+        '<span>🌸 ' + escapeHtml(getForecastDateText(spot)) + '</span>' +
+        '<span class="temp">' + escapeHtml(getForecastBasisLabel(spot)) + '</span>' +
+      '</div>' +
+      '<div class="spot-card-meta">' +
+        '<span class="spot-chip">' + escapeHtml(getSpotTagLabel(spot.tag)) + '</span>' +
+        (getSpotAreaDisplay(spot) ? '<span class="spot-chip">' + escapeHtml(getSpotAreaDisplay(spot)) + '</span>' : '') +
+        (spot.prefecture ? '<span class="spot-chip">' + escapeHtml(spot.prefecture) + '</span>' : '') +
+        (spot.rank ? '<span class="spot-chip">#' + spot.rank + ' ' + escapeHtml(tr("rank")) + '</span>' : '') +
+        '<span class="spot-chip">' + escapeHtml(getSpotSourceDisplay(spot)) + '</span>' +
+        '<span class="spot-chip">' + escapeHtml(getForecastBasisLabel(spot)) + '</span>' +
+        (spot.featured ? '<span class="spot-chip">★ ' + escapeHtml(tr("featuredRanked")) + '</span>' : '') +
+      '</div>' +
+      '<div class="city-countdown">' + escapeHtml(getCountdownShort(spot)) + '</div>' +
+    '</div>';
+  }
+
+  function renderCityList() {
+    var container = document.getElementById("cityList");
+    if (sourceState.mode === "loading" && !cities.length) {
+      container.innerHTML = '<div class="no-results"><i class="fa-solid fa-spinner fa-spin"></i>' + escapeHtml(tr("loadingCities")) + '</div>';
+      return;
+    }
+    if (listMode === "spots" && spotDataState.mode === "loading" && !spots.length) {
+      container.innerHTML = '<div class="no-results"><i class="fa-solid fa-spinner fa-spin"></i>' + escapeHtml(tr("loadingSpots")) + '</div>';
+      return;
+    }
+    var sorted = (listMode === "spots" ? getFilteredSpots() : getFilteredCities()).slice().sort(function(a, b) {
+      var byDate = forecastSortValue(a.bloom) - forecastSortValue(b.bloom);
+      if (byDate !== 0) return byDate;
+      return a.order - b.order;
+    });
+
+    if (!sorted.length) {
+      container.innerHTML = '<div class="no-results"><i class="fa-regular fa-face-sad-tear"></i>' + escapeHtml(tr(listMode === "spots" ? "noSpots" : "noCities")) + '</div>';
+      return;
+    }
+
+    container.innerHTML = sorted.map(function(item, index) {
+      return listMode === "spots" ? buildSpotCard(item, index) : buildCityCard(item, index);
+    }).join("");
+
+    container.querySelectorAll(".city-card").forEach(function(card) {
+      card.addEventListener("click", function() {
+        if (card.dataset.spot) {
+          selectSpot(card.dataset.spot);
+          return;
+        }
+        selectCity(card.dataset.city);
+      });
+    });
+  }
+
+  function updateStatBar() {
+    if (sourceState.mode === "loading" && !cities.length) {
+      document.getElementById("statBar").innerHTML = escapeHtml(tr("loadingCities"));
+      return;
+    }
+    if (listMode === "spots" && spotDataState.mode === "loading" && !spots.length) {
+      document.getElementById("statBar").innerHTML = escapeHtml(tr("statLoading"));
+      return;
+    }
+    var filtered = listMode === "spots" ? getFilteredSpots() : getFilteredCities();
+    var bloomingCount = filtered.filter(function(item) {
+      var status = getStatus(item);
+      return status === "blooming" || status === "full_bloom";
+    }).length;
+    var sourceCopy = sourceState.mode === "live" ? tr("statSourceLive") : tr("statSourceFallback");
+    var unit = listMode === "spots" ? tr("spotsUnit") : tr("citiesUnit");
+    document.getElementById("statBar").innerHTML = tmpl(tr("statBar"), { count: bloomingCount, total: filtered.length, unit: unit, source: sourceCopy });
+  }
+
+  function selectCity(name) {
+    selectedCity = name;
+    selectedSpot = null;
+    var city = cities.find(function(item) { return item.name === name; });
+    if (!city) return;
+    if (isMobileViewport() && sidebarOpen) {
+      setSidebarOpen(false);
+    }
+    refreshMarkers();
+    renderCityList();
+    focusMarkerPopup(cityMarkerMap[name], city.lat, city.lng, 9);
+
+    var card = document.querySelector('.city-card[data-city="' + name + '"]');
+    if (card) card.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  function selectSpot(id) {
+    var spot = spots.find(function(item) { return item.id === id; });
+    if (!spot) return;
+    if (isMobileViewport() && sidebarOpen) {
+      setSidebarOpen(false);
+    }
+    listMode = "spots";
+    selectedSpot = id;
+    selectedCity = spot.cityName;
+    if (sourceState.mode !== "loading") ensureSpotDataLoaded();
+    invalidateDerivedState();
+    scheduleRender({ translations: true, spotFilters: true, markers: true, cityList: true, statBar: true, mapInfo: true });
+    if (spotMarkerMap[id] && hasValidCoordinates(spot)) {
+      focusMarkerPopup(spotMarkerMap[id], spot.lat, spot.lng, 11);
+    } else if (cityMarkerMap[spot.cityName]) {
+      var city = cities.find(function(item) { return item.name === spot.cityName; });
+      if (city) focusMarkerPopup(cityMarkerMap[spot.cityName], city.lat, city.lng, 10);
+    }
+
+    var card = document.querySelector('.city-card[data-spot="' + id + '"]');
+    if (card) card.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  /* ── Mobile ── */
+  function setSidebarOpen(open) {
+    sidebarOpen = open;
+    var sidebar = document.getElementById("sidebar");
+    var button = document.getElementById("mobileToggle");
+    if (sidebar) sidebar.classList.toggle("open", open);
+    if (button) {
+      button.innerHTML = open
+        ? '<i class="fa-solid fa-map"></i> ' + escapeHtml(tr("mobileMap"))
+        : '<i class="fa-solid fa-list"></i> ' + escapeHtml(tr("mobileList"));
+    }
+    if (map && isMobileViewport()) {
+      window.setTimeout(function() {
+        map.invalidateSize(false);
+      }, open ? 220 : 360);
+    }
+  }
+
+  function toggleSidebar() {
+    setSidebarOpen(!sidebarOpen);
+  }
+
+  /* ── Petals ── */
+  function createPetals() {
+    var container = document.getElementById("petalsContainer");
+    if (!container || container.childNodes.length || prefersReducedMotion() || isMobileViewport()) return;
+    var fragment = document.createDocumentFragment();
+    for (var i = 0; i < 15; i++) {
+      var petal = document.createElement("div");
+      petal.className = "petal";
+      var size = 8 + Math.random() * 10;
+      var left = Math.random() * 100;
+      var duration = 9 + Math.random() * 13;
+      var delay = Math.random() * 16;
+      var drift = -60 + Math.random() * 120;
+      var spin = 360 + Math.random() * 720;
+      petal.style.cssText = "left:" + left + "%;width:" + size + "px;height:" + size + "px;animation-duration:" + duration + "s;animation-delay:" + delay + "s;--drift:" + drift + "px;--spin:" + spin + "deg;animation-iteration-count:infinite;";
+      petal.innerHTML = '<div class="petal-shape"></div>';
+      fragment.appendChild(petal);
+    }
+    container.appendChild(fragment);
+  }
+
+  function warmVisualEffects() {
+    scheduleIdleTask(function() {
+      createPetals();
+    }, 1200);
+  }
+
+  function renderAll() {
+    cancelScheduledRender();
+    updateStaticTranslations();
+    updateDateDisplay();
+    updateSourceDisplay();
+    updateLoadingStatus();
+    populateMarkers();
+    renderRegionFilters();
+    renderSpotFilters();
+    renderCityList();
+    updateStatBar();
+    updateMapInfo();
+  }
+
+  /* ── Events ── */
+  function bindEvents() {
+    document.getElementById("searchInput").addEventListener("input", function(event) {
+      var nextValue = event.target.value;
+      window.clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = window.setTimeout(function() {
+        searchTerm = nextValue;
+        invalidateDerivedState();
+        scheduleRender({ cityList: true, statBar: true, markers: true, mapInfo: true, fit: true });
+      }, 90);
+    });
+
+    document.querySelectorAll(".view-btn").forEach(function(button) {
+      button.addEventListener("click", function() {
+        if (listMode === button.dataset.view) return;
+        listMode = button.dataset.view;
+        if (listMode === "cities") {
+          selectedSpot = null;
+          cancelSpotDataLoad();
+        }
+        if (listMode === "spots" && sourceState.mode !== "loading") ensureSpotDataLoaded();
+        invalidateDerivedState();
+        scheduleRender({ translations: true, spotFilters: true, cityList: true, statBar: true, markers: true, mapInfo: true, fit: true });
+      });
+    });
+
+    document.querySelectorAll(".lang-btn").forEach(function(button) {
+      button.addEventListener("click", function() {
+        if (currentLang === button.dataset.lang) return;
+        currentLang = button.dataset.lang;
+        invalidateDerivedState();
+        renderAll();
+        if (selectedSpot && spotMarkerMap[selectedSpot]) {
+          spotMarkerMap[selectedSpot].openPopup();
+          return;
+        }
+        if (selectedCity && cityMarkerMap[selectedCity]) cityMarkerMap[selectedCity].openPopup();
+      });
+    });
+
+    document.getElementById("legendToggle").addEventListener("click", function() {
+      document.getElementById("legendPanel").classList.toggle("visible");
+    });
+
+    document.getElementById("mobileToggle").addEventListener("click", toggleSidebar);
+
+    window.addEventListener("resize", function() {
+      if (map) {
+        map.invalidateSize(false);
+      }
+    });
+
+    document.getElementById("dateSlider").addEventListener("input", function(event) {
+      currentDate = sliderOffsetToDate(parseInt(event.target.value, 10));
+      invalidateDerivedState();
+      scheduleRender({ dateDisplay: true, markers: true, cityList: true, statBar: true, mapInfo: true });
+    });
+
+    document.getElementById("map").addEventListener("click", function(event) {
+      if (event.target === document.getElementById("map") || event.target.classList.contains("leaflet-container")) {
+        document.getElementById("legendPanel").classList.remove("visible");
+      }
+    });
+  }
+
+  /* ── Init ── */
+  async function init() {
+    sourceState = { mode: "loading", updatedText: "", liveCount: 0, message: "Loading live forecast from WeatherMap." };
+    setCities([]);
+    updateStaticTranslations();
+    initMap();
+    renderAll();
+    warmVisualEffects();
+    bindEvents();
+
+    updateSourceDisplay();
+    updateMapInfo();
+
+    sourceState = await loadLiveData();
+    renderAll();
+    fitVisibleCities();
+    if (listMode === "spots") ensureSpotDataLoaded();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>
